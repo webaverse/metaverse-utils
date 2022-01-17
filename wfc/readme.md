@@ -49,6 +49,7 @@
 ## how to run
 wfc directory is independent project,
 ```shell
+    cd wfc
     # install all package
     npm i   
     # run project
