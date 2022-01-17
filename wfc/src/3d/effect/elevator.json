@@ -1,0 +1,21 @@
+{
+    "type": "line",
+    "color": "#0077ff",
+    "geometrics": [
+        {
+            "id": "12"
+        }
+    ],
+    "materials": [
+        {
+            "id": "12"
+        }
+    ],
+    "meshs": [
+        {
+            "id": "12",
+            "parent": null,
+            "children":[]
+        }
+    ]
+}
