@@ -13,8 +13,8 @@ export default {
     neighbour: {
         pX: [],
         nX: [],
-        pY: ['empty'],
-        nY: ['empty'],
+        pY: [],
+        nY: [],
         pZ: [],
         nZ: []
     }

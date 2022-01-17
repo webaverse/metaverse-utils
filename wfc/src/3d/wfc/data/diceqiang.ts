@@ -5,9 +5,9 @@ export default {
     rotation: 0,
     enableVRotation: true,
     sockets: {
-        pX: 'h',
+        pX: '-1',
         nX: '0s',
-        pY: 'v2_1',
+        pY: 'v2_0',
         nY: '-1',
         pZ: '3',
         nZ: '3f'

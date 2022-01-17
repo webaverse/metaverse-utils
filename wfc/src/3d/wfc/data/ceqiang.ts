@@ -12,11 +12,11 @@ export default {
         nZ: '8'
     },
     neighbour: {
-        pX: ['empty'],
-        nX: ['empty'],
+        pX: [],
+        nX: [],
         pY: [],
         nY: [],
-        pZ: ['ceqiang', 'cezhu'],
-        nZ: ['ceqiang', 'cezhu']
+        pZ: [],
+        nZ: []
     }
 }

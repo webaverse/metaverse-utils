@@ -1,6 +1,6 @@
 import { Vector3, Object3D } from 'three';
-import { modules, newModules } from './data';
-import { WFCMap } from './wfc';
+import { allModules, modules, newModules } from './data';
+import { WFCMap } from './wfcMap';
 
 export class Cell extends Object3D {
     findPossibleModule() {
@@ -10,7 +10,7 @@ export class Cell extends Object3D {
     // Direction -> Module -> Number of items in this.getneighbor(direction).Modules that allow this module as a neighbor 
     public _module: any = null;
 
-    public possibleModules: any[] = newModules();
+    public possibleNeighbor: any[] = newModules();
 
     _mesh: Object3D;
 
@@ -18,7 +18,7 @@ export class Cell extends Object3D {
 
     get entropy() {
         let acc = 0
-        this.possibleModules.forEach(v => acc += -v.probability * Math.log(v.probability));
+        this.possibleNeighbor.forEach(v => acc += -v.probability * Math.log(v.probability));
         return acc;
     }
 
@@ -68,7 +68,7 @@ export class Cell extends Object3D {
     get front() {
         const x = this.position.x;
         const y = this.position.y;
-        const z = this.position.z + 1;
+        const z = this.position.z - 1;
 
         return this.wfcMap.map[`${x}_${y}_${z}`]
     }
@@ -76,84 +76,94 @@ export class Cell extends Object3D {
     get back() {
         const x = this.position.x;
         const y = this.position.y;
-        const z = this.position.z - 1;
+        const z = this.position.z + 1;
 
         return this.wfcMap.map[`${x}_${y}_${z}`]
     }
+
+
 
     reCalcNeigb() {
         if (this.isCollapsed)
             return;
 
         if (this.position.z === 0)
-            this.possibleModules = this.possibleModules.filter(module => module.sockets.nY === '-1')
+            this.possibleNeighbor = this.possibleNeighbor.filter(module => module.sockets.nY === '-1')
         else {
             if (this.bottom && this.bottom.isCollapsed) {
-                this.possibleModules.filter(module => this.modulesEquals(module.sockets.nY, this.bottom._module.sockets.pY))
+                this.possibleNeighbor = this.possibleNeighbor.filter(module => this.modulesEquals(module.sockets.nY, this.bottom._module.sockets.pY))
             }
         }
         if (this.position.z === this.wfcMap.size.z) {
-            this.possibleModules = this.possibleModules.filter(module => module.sockets.nY === '-1')
+            this.possibleNeighbor = this.possibleNeighbor.filter(module => module.sockets.nY === '-1')
 
         } else {
             if (this.top && this.top.isCollapsed) {
-                this.possibleModules.filter(module => this.modulesEquals(module.sockets.pY, this.top._module.sockets.nY))
+                this.possibleNeighbor = this.possibleNeighbor.filter(module => this.modulesEquals(module.sockets.pY, this.top._module.sockets.nY))
             }
         }
 
         if (this.left && this.left.isCollapsed) {
             const neighbours = this.left._module.neighbour.pX;
             if (neighbours.length > 0)
-                this.possibleModules = neighbours.map(v => modules[v]);
+                this.possibleNeighbor = neighbours.map(v => modules[v]);
             else
-                this.possibleModules.filter(module => this.modulesEquals(module.sockets.nX, this.left._module.sockets.pX))
+                this.possibleNeighbor = this.possibleNeighbor.filter(module => this.modulesEquals(module.sockets.nX, this.left._module.sockets.pX))
         }
 
         if (this.right && this.right.isCollapsed) {
             const neighbours = this.right._module.neighbour.pX;
             if (neighbours.length > 0)
-                this.possibleModules = neighbours.map(v => modules[v]);
+                this.possibleNeighbor = neighbours.map(v => modules[v]);
             else
-                this.possibleModules.filter(module => this.modulesEquals(module.sockets.pX, this.right._module.sockets.nX))
+                this.possibleNeighbor = this.possibleNeighbor.filter(module => this.modulesEquals(module.sockets.pX, this.right._module.sockets.nX))
         }
 
         if (this.front && this.front.isCollapsed) {
             const neighbours = this.front._module.neighbour.pX;
             if (neighbours.length > 0)
-                this.possibleModules = neighbours.map(v => modules[v]);
+                this.possibleNeighbor = neighbours.map(v => modules[v]);
             else
-                this.possibleModules.filter(module => this.modulesEquals(module.sockets.pZ, this.front._module.sockets.nZ))
+                this.possibleNeighbor = this.possibleNeighbor.filter(module => this.modulesEquals(module.sockets.pZ, this.front._module.sockets.nZ))
         }
 
         if (this.back && this.back.isCollapsed) {
             const neighbours = this.back._module.neighbour.pX;
             if (neighbours.length > 0)
-                this.possibleModules = neighbours.map(v => modules[v]);
+                this.possibleNeighbor = neighbours.map(v => modules[v]);
             else
-                this.possibleModules.filter(module => this.modulesEquals(module.sockets.nZ, this.back._module.sockets.pZ))
+                this.possibleNeighbor = this.possibleNeighbor.filter(module => this.modulesEquals(module.sockets.nZ, this.back._module.sockets.pZ))
         }
 
 
     }
 
     modulesEquals(a, b) {
-        if (a[a.length - 1] === 's')
-            return a === b;
-        if (a[a.length - 1] === 'f')
+        if (a[a.length - 1] === 'f') //反转
             return a === b + 'f';
         if (b[b.length - 1] === 'f')
             return a + 'f' === b
-        else
-            return a === b;
+
+        if (a[a.length - 1] === 't')//自同异不同
+            return a === b + 't' || a === b;
+        if (b[b.length - 1] === 't')
+            return a + 't' === b || a === b;
+
+        return a === b; //对称和其他
     }
 
-    CollapseRandom() {
+    CollapseRandom(name?: string) {
         this.reCalcNeigb();
-
-        const len = this.possibleModules.length;
-        const ipos = Math.floor(Math.random() * len);
-
-        this.module = this.possibleModules[ipos] || modules['empty'];
+        if (name !== undefined) {
+            this.module = allModules[name];
+        } else {
+            const len = this.possibleNeighbor.length;
+            const ipos = Math.floor(Math.random() * len);
+            const module = this.possibleNeighbor[ipos] || allModules['empty'];
+            if (!module)
+                debugger
+            this.module = module;
+        }
 
         if (this._module) {
             this.left && this.left.reCalcNeigb();
@@ -182,7 +192,7 @@ export class Cell extends Object3D {
 
 
     reset() {
-        this.possibleModules = newModules();
+        this.possibleNeighbor = newModules();
     }
 
 

@@ -3,12 +3,12 @@ export default {
     enableVRotation: true,
     rotation: 0,
     sockets: {
-        pX: '-1',
-        nX: '-1',
+        pX: '9t',
+        nX: '9t',
         pY: '-1',
         nY: '-1',
-        pZ: '-1',
-        nZ: '-1',
+        pZ: '9t',
+        nZ: '9t',
     },
     neighbour: {
         pX: [],

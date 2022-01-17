@@ -6,16 +6,16 @@ export default {
         pX: '4f',
         nX: '-1',
         pY: '-1',
-        nY: 'v2_2',
-        pZ: '4',
-        nZ: '-1'
+        nY: 'v2_1',
+        pZ: '-1',
+        nZ: '4f'
     },
     neighbour: {
         pX: [],
-        nX: ['empty'],
-        pY: ['empty'],
+        nX: [],
+        pY: [],
         nY: [],
         pZ: [],
-        nZ: ['empty']
+        nZ: []
     }
 }

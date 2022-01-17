@@ -4,7 +4,7 @@ export default {
     rotation: 0,
     sockets: {
         pX: '0s',
-        nX: '9s',
+        nX: '9',
         pY: '-1',
         nY: '-1',
         pZ: '6',
@@ -13,8 +13,8 @@ export default {
     neighbour: {
         pX: [],
         nX: [],
-        pY: ['empty'],
-        nY: ['empty'],
+        pY: [],
+        nY: [],
         pZ: [],
         nZ: []
     }

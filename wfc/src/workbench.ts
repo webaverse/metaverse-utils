@@ -1,8 +1,8 @@
 import { App } from './app';
 import { GraphDevice } from './3d/graphdevice';
-import { Asset, AssetLoaderManger } from './3d/Asset';
+import { AssetLoaderManger } from './3d/Asset';
 import { Object3D, Vector3 } from 'three';
-import { WFCMap } from './3d/wfc/wfc';
+import { WFCMap } from './3d/wfc/wfcMap';
 import { modules } from './3d/wfc/data';
 
 export const assetData = [
@@ -55,12 +55,11 @@ export class Workbench {
         }
         this.ALM.load()
         this.gd.on('loadFinish', () => {
-
             for (let i = 0; i < modules.length; i++) {
                 const v = modules[i];
-                const model: Object3D = new Object3D().add((this.moduleModels[v.name] || new Object3D()).clone());
-                v.mesh = model;
+                const model: Object3D = new Object3D().add((this.moduleModels[v.modelName] || new Object3D()).clone());
                 model.rotation.y = (Math.PI / 2 * v.rotation);
+                v.mesh = model;
             }
 
             // for (let j = 0; j < modules.length; j++) {
@@ -70,15 +69,14 @@ export class Workbench {
             //     console.log(module.mesh.position)
             //     this.gd.add(module.mesh)
             // }
-            //modules  global  model and mesh
 
 
-            this.initMap()
+            this.initMap();
         })
 
     }
     initMap() {
-        this.wfcMap = new WFCMap(new Vector3(8, 3, 8));
+        this.wfcMap = new WFCMap(new Vector3(5, 3, 5));
         this.gd.add(this.wfcMap);
 
         this.wfcMap.Collapse(new Vector3)

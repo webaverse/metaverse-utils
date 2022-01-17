@@ -4,11 +4,11 @@ export default {
     rotation: 0,
     sockets: {
         pX: '3f',
-        nX: '6f',
+        nX: '6',
         pY: 'v2_2',
         nY: '-1',
         pZ: '3',
-        nZ: '6'
+        nZ: '6f'
     },
     neighbour: {
         pX: [],

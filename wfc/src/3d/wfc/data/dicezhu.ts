@@ -5,7 +5,7 @@ export default {
     sockets: {
         pX: '3f',
         nX: '0s',
-        pY: '-1',
+        pY: 'v2_2',
         nY: '-1',
         pZ: '3',
         nZ: '0s'

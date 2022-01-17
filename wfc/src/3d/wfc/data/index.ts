@@ -37,18 +37,21 @@ const base = {
 
 const modules = []
 for (const key in base) {
-    const module = base[key]; 
+    const module = base[key];
     if (module.enableVRotation)
         for (let i = 0; i < 4; i++) {
             modules.push(createQuaterModule(module, i))
         }
-    else
+    else {
+        module.modelName = module.name;
         modules.push(module);
+    }
 }
 for (const key in modules) {
     modules[key].probability = Math.random() / 2 + 0.5
 }
-modules['empty'] = empty;
 
 const newModules = () => [...modules];
-export { modules, newModules };
+const allModules = {}
+modules.forEach(m => allModules[m.name] = m)
+export { modules, newModules, allModules };

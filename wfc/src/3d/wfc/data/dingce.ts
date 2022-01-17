@@ -6,7 +6,7 @@ export default {
         pX: '0s',
         nX: '-1',
         pY: '-1',
-        nY: 'v4_1',
+        nY: 'v8_1',
         pZ: '4',
         nZ: '4f'
     },
