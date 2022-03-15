@@ -797,11 +797,12 @@ class MeshCutter {
       if(this.isInnerFaces) object2.geometry.computeVertexNormals();
     }
 
-    return {
+    const output = {
       object1,
       object2,
       numObjects,
     };
+    return output;
   }
 }
 
