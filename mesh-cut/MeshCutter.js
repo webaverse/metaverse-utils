@@ -110,21 +110,25 @@ class MeshCutter {
     //   triangles: this.delaunay.triangles.slice(),
     //   trianglesLen: this.delaunay.trianglesLen,
     // }
-    this.delaunay2 = {
-      coords: [],
+    this.delaunayTemp = {
+      coords: this.delaunay.coords, // note: don't need filter out.
       halfedges: [],
       hull: [],
       triangles: [],
       trianglesLen: 0,
     }
     
+    // todo: performance: filter halfedge === -1 first.
     for(let i = 0; i < this.delaunay.numTriangles; i++) {
-      const x0 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 0] * 2]
-      const y0 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 0] * 2 + 1]
-      const x1 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 1] * 2]
-      const y1 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 1] * 2 + 1]
-      const x2 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 2] * 2]
-      const y2 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 2] * 2 + 1]
+      const coordIndex0 = this.delaunay.triangles[i * 3 + 0];
+      const coordIndex1 = this.delaunay.triangles[i * 3 + 1];
+      const coordIndex2 = this.delaunay.triangles[i * 3 + 2];
+      const x0 = this.delaunay.coords[coordIndex0 * 2]
+      const y0 = this.delaunay.coords[coordIndex0 * 2 + 1]
+      const x1 = this.delaunay.coords[coordIndex1 * 2]
+      const y1 = this.delaunay.coords[coordIndex1 * 2 + 1]
+      const x2 = this.delaunay.coords[coordIndex2 * 2]
+      const y2 = this.delaunay.coords[coordIndex2 * 2 + 1]
       
       if(this.delaunay.halfedges[i * 3 + 0] === -1) {
         let isOverlap0 = false
@@ -174,9 +178,18 @@ class MeshCutter {
         if(!isOverlap2) continue;
       }
 
-      this.delaunay2.triangles.push()
+      this.delaunayTemp.triangles.push(
+        coordIndex0,
+        coordIndex1,
+        coordIndex2,
+      )
+      // this.delaunayTemp.halfedges
     }
 
+    this.delaunayTemp.trianglesLen = this.delaunayTemp.triangles.length;
+    this.delaunayTemp.numTriangles = this.delaunayTemp.trianglesLen / 3;
+
+    this.delaunay = this.delaunayTemp
   }
 
   createInnerFaces() {
