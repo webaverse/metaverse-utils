@@ -288,11 +288,11 @@ class MeshCutter {
     // this.normals1.length = 0
     // this.uvs1.length = 0
 
-    // test
-    this.points1.forEach((point, i) => {
-      this.points1[i] = point.clone()
-      // this.points1[i].z -= 1 // test
-    })
+    // // test
+    // this.points1.forEach((point, i) => {
+    //   this.points1[i] = point.clone()
+    //   // this.points1[i].z -= 1 // test
+    // })
 
     console.log({pointsInner:this.pointsInner})
     this.innerCoords2D = [];
@@ -333,6 +333,11 @@ class MeshCutter {
         new THREE.Vector3(x2, y2, 0),
         new THREE.Vector3(x1, y1, 0),
       )
+      this.points2.push(
+        new THREE.Vector3(x0, y0, 0),
+        new THREE.Vector3(x1, y1, 0),
+        new THREE.Vector3(x2, y2, 0),
+      )
       
       const uv0 = this.uvsInner[this.delaunay.triangles[i * 3 + 0]]
       const uv1 = this.uvsInner[this.delaunay.triangles[i * 3 + 1]]
@@ -341,6 +346,11 @@ class MeshCutter {
         uv0,
         uv2,
         uv1,
+      )
+      this.uvs2.push(
+        uv0,
+        uv1,
+        uv2,
       )
       // this.uvs1.push(
       //   0,
@@ -357,6 +367,11 @@ class MeshCutter {
       //   normal1,
       // )
       this.normals1.push(
+        0,
+        0,
+        0,
+      )
+      this.normals2.push(
         0,
         0,
         0,
