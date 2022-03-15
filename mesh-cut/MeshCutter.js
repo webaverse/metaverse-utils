@@ -313,10 +313,10 @@ class MeshCutter {
     //   new THREE.Vector3(0, 1, 1),
     // )
 
-    // // test
-    // this.points1.length = 0
-    // this.normals1.length = 0
-    // this.uvs1.length = 0
+    // test
+    this.points1.length = 0
+    this.normals1.length = 0
+    this.uvs1.length = 0
 
     // test
     this.points1.forEach((point, i) => {
@@ -394,7 +394,7 @@ class MeshCutter {
     }
   }
 
-  cutByPlane(object, plane, isInnerFaces = false) {
+  cutByPlane(object, plane, isInnerFaces = false) { // todo: add arg: isDelOuterTriangles = false, convex geometries don't need delete outer triangles.
     // Returns breakable objects in output.object1 and output.object2 members, the resulting 2 pieces of the cut.
     // object2 can be null if the plane doesn't cut the object.
     // object1 can be null only in case of internal error
