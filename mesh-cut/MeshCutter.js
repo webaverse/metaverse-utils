@@ -100,7 +100,7 @@ class MeshCutter {
     return geometry;
   }
 
-  delOuterTriangles() {
+  markOuterHalfedges() {
     // todo: need recur filter out.
 
     // this.delaunay2 = {
@@ -110,16 +110,20 @@ class MeshCutter {
     //   triangles: this.delaunay.triangles.slice(),
     //   trianglesLen: this.delaunay.trianglesLen,
     // }
-    this.delaunayTemp = {
-      coords: this.delaunay.coords, // note: don't need filter out.
-      halfedges: [],
-      hull: [],
-      triangles: [],
-      trianglesLen: 0,
-    }
+    // this.delaunayTemp = {
+    //   coords: this.delaunay.coords, // note: don't need filter out, so don't need clone.
+    //   halfedges: [],
+    //   hull: [],
+    //   triangles: [],
+    //   trianglesLen: 0,
+    // }
     
     // todo: performance: filter halfedge === -1 first.
     for(let i = 0; i < this.delaunay.numTriangles; i++) {
+      const halfedge0 = this.delaunay.halfedges[i * 3 + 0];
+      const halfedge1 = this.delaunay.halfedges[i * 3 + 1];
+      const halfedge2 = this.delaunay.halfedges[i * 3 + 2];
+
       const coordIndex0 = this.delaunay.triangles[i * 3 + 0];
       const coordIndex1 = this.delaunay.triangles[i * 3 + 1];
       const coordIndex2 = this.delaunay.triangles[i * 3 + 2];
@@ -130,7 +134,8 @@ class MeshCutter {
       const x2 = this.delaunay.coords[coordIndex2 * 2]
       const y2 = this.delaunay.coords[coordIndex2 * 2 + 1]
       
-      if(this.delaunay.halfedges[i * 3 + 0] === -1) {
+      let anyNotOverlap = false
+      if(halfedge0 === -1) {
         let isOverlap0 = false
         for(let il = 0; il < this.linesInner.length; il += 2) {
           const p0 = this.linesInner[il]
@@ -143,10 +148,13 @@ class MeshCutter {
             break;
           }
         }
-        if(!isOverlap0) continue;
+        if(!isOverlap0) {
+          anyNotOverlap = true
+          // continue
+        };
       }
 
-      if(this.delaunay.halfedges[i * 3 + 1] === -1) {
+      if(halfedge1 === -1) {
         let isOverlap1 = false
         for(let il = 0; il < this.linesInner.length; il += 2) {
           const p0 = this.linesInner[il]
@@ -159,10 +167,13 @@ class MeshCutter {
             break;
           }
         }
-        if(!isOverlap1) continue;
+        if(!isOverlap1) {
+          anyNotOverlap = true
+          // continue
+        };
       }
 
-      if(this.delaunay.halfedges[i * 3 + 2] === -1) {
+      if(halfedge2 === -1) {
         let isOverlap2 = false
         for(let il = 0; il < this.linesInner.length; il += 2) {
           const p0 = this.linesInner[il]
@@ -175,7 +186,116 @@ class MeshCutter {
             break;
           }
         }
-        if(!isOverlap2) continue;
+        if(!isOverlap2) {
+          anyNotOverlap = true
+          // continue
+        };
+      }
+
+      if(anyNotOverlap) {
+        this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 0]] = -1
+        this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 1]] = -1
+        this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 2]] = -1
+      }
+
+      // this.delaunayTemp.triangles.push(
+      //   coordIndex0,
+      //   coordIndex1,
+      //   coordIndex2,
+      // )
+      // this.delaunayTemp.halfedges.push(
+      //   halfedge0,
+      //   halfedge1,
+      //   halfedge2,
+      // )
+    }
+
+    // this.delaunayTemp.trianglesLen = this.delaunayTemp.triangles.length;
+    // this.delaunayTemp.numTriangles = this.delaunayTemp.trianglesLen / 3;
+
+    // this.delaunay = this.delaunayTemp
+  }
+
+  delOuterTriangles() {
+    // todo: need recur filter out.
+
+    // this.delaunay2 = {
+    //   coords: this.delaunay.coords.slice(),
+    //   halfedges: this.delaunay.halfedges.slice(),
+    //   hull: this.delaunay.hull.slice(),
+    //   triangles: this.delaunay.triangles.slice(),
+    //   trianglesLen: this.delaunay.trianglesLen,
+    // }
+    this.delaunayTemp = {
+      coords: this.delaunay.coords, // note: don't need filter out, so don't need clone.
+      halfedges: [],
+      hull: [],
+      triangles: [],
+      trianglesLen: 0,
+    }
+    
+    // todo: performance: filter halfedge === -1 first.
+    for(let i = 0; i < this.delaunay.numTriangles; i++) {
+      const halfedge0 = this.delaunay.halfedges[i * 3 + 0];
+      const halfedge1 = this.delaunay.halfedges[i * 3 + 1];
+      const halfedge2 = this.delaunay.halfedges[i * 3 + 2];
+
+      const coordIndex0 = this.delaunay.triangles[i * 3 + 0];
+      const coordIndex1 = this.delaunay.triangles[i * 3 + 1];
+      const coordIndex2 = this.delaunay.triangles[i * 3 + 2];
+      const x0 = this.delaunay.coords[coordIndex0 * 2]
+      const y0 = this.delaunay.coords[coordIndex0 * 2 + 1]
+      const x1 = this.delaunay.coords[coordIndex1 * 2]
+      const y1 = this.delaunay.coords[coordIndex1 * 2 + 1]
+      const x2 = this.delaunay.coords[coordIndex2 * 2]
+      const y2 = this.delaunay.coords[coordIndex2 * 2 + 1]
+      
+      if(halfedge0 === -1) {
+        let isOverlap0 = false
+        for(let il = 0; il < this.linesInner.length; il += 2) {
+          const p0 = this.linesInner[il]
+          const p1 = this.linesInner[il + 1]
+          if(
+            (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
+            (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
+          ) {
+            isOverlap0 = true;
+            break;
+          }
+        }
+        if(!isOverlap0) continue
+      }
+
+      if(halfedge1 === -1) {
+        let isOverlap1 = false
+        for(let il = 0; il < this.linesInner.length; il += 2) {
+          const p0 = this.linesInner[il]
+          const p1 = this.linesInner[il + 1]
+          if(
+            (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
+            (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
+          ) {
+            isOverlap1 = true;
+            break;
+          }
+        }
+        if(!isOverlap1) continue
+      }
+
+      if(halfedge2 === -1) {
+        let isOverlap2 = false
+        for(let il = 0; il < this.linesInner.length; il += 2) {
+          const p0 = this.linesInner[il]
+          const p1 = this.linesInner[il + 1]
+          if(
+            (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
+            (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
+          ) {
+            isOverlap2 = true;
+            break;
+          }
+        }
+        if(!isOverlap2) continue
       }
 
       this.delaunayTemp.triangles.push(
@@ -183,7 +303,11 @@ class MeshCutter {
         coordIndex1,
         coordIndex2,
       )
-      // this.delaunayTemp.halfedges
+      this.delaunayTemp.halfedges.push(
+        halfedge0,
+        halfedge1,
+        halfedge2,
+      )
     }
 
     this.delaunayTemp.trianglesLen = this.delaunayTemp.triangles.length;
@@ -222,7 +346,10 @@ class MeshCutter {
     console.log({numTriangles: this.delaunay.numTriangles})
     console.log({linesInner: this.linesInner})
 
-    this.delOuterTriangles();
+    this.markOuterHalfedges();
+    this.markOuterHalfedges();
+
+    this.delOuterTriangles()
     
     for(let i = 0; i < this.delaunay.numTriangles; i++) {
       const x0 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 0] * 2]
