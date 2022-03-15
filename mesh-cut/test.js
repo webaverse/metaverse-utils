@@ -56,7 +56,7 @@ function init_three() {
   // gridHelper.position.y = 0.037
   gridHelper.material.opacity = 0.2
   gridHelper.material.transparent = true
-  scene.add(gridHelper)
+  // scene.add(gridHelper)
 
   renderer = new THREE.WebGLRenderer({ antialias: true })
   renderer.setPixelRatio(window.devicePixelRatio)
@@ -96,20 +96,45 @@ function animate(time) {
 
 window.meshCutter = new MeshCutter()
 
-const geometry = new THREE.BoxGeometry()
-// const geometry = new THREE.PlaneGeometry()
-// const geometry = new THREE.CylinderGeometry()
-// const geometry = new THREE.TorusKnotGeometry()
-geometry.scale(0.5, 0.5, 0.5)
+// const geometry = new THREE.ConeGeometry(.5, 1, 3)
+// // const geometry = new THREE.BoxGeometry()
+// // const geometry = new THREE.PlaneGeometry()
+// // const geometry = new THREE.CylinderGeometry()
+// const geometry = new THREE.TorusGeometry( 1, .4, 3, 3 );
+// // const geometry = new THREE.TorusKnotGeometry()
+// geometry.scale(0.5, 0.5, 0.5)
+// geometry.rotateX(Math.PI/2)
+// geometry.rotateY(Math.PI/2)
+
+const shape = new THREE.Shape();
+shape.moveTo( 0,0 );
+shape.lineTo( .5, .5 );
+shape.lineTo( 0, -1 );
+shape.lineTo( -.5, .5 );
+shape.lineTo( 0, 0 );
+const extrudeSettings = {
+  curveSegments: 1,
+	steps: 1,
+	depth: 1,
+	bevelEnabled: false,
+};
+const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+geometry.translate(0, 0, -.5)
+
+// const positions = [
+
+// ]
+// const geometry = new THREE.BufferGeometry()
+// geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
 
 // const geometry = indexedGeometry.toNonIndexed()
 // geometry.clearGroups()
 
 const material = new THREE.MeshStandardMaterial({
   // const material = new THREE.MeshBasicMaterial({
-  // color: 'red',
-  // wireframe: true,
-  // side: THREE.DoubleSide,
+  color: 'black',
+  wireframe: true,
+  side: THREE.DoubleSide,
   map: new THREE.TextureLoader().load('./image/uv_grid_opengl.jpg'),
 })
 const mesh = new THREE.Mesh(geometry, material)
@@ -135,16 +160,17 @@ if (true) {
     window.output = window.meshCutter.cutByPlane(window.box, window.plane)
     if (window.output.object1) {
       window.scene.add(window.output.object1)
-      // window.output.object1.position.x += -1
-      // window.output.object1.position.z += 2
+      window.output.object1.position.x += -1 / 1
+      window.output.object1.position.z += 2 / 1
       // window.output.object1.updateMatrixWorld()
     }
     if (window.output.object2) {
       window.scene.add(window.output.object2)
-      window.output.object2.position.x += 1
-      window.output.object2.position.z += 2
+      window.output.object2.position.x += 1 / 1
+      window.output.object2.position.z += 2 / 1
       // window.output.object2.updateMatrixWorld()
     }
-    window.box.visible = false
+    // window.box.visible = false
+    window.box.position.z += -1 / 1
   }, 1000)
 }

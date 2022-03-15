@@ -121,6 +121,8 @@ class MeshCutter {
       numFaces = indices.length / 3;
     }
 
+    const linesInner = [];
+
     const points1 = [];
     const points2 = [];
     const pointsInner = [];
@@ -187,6 +189,7 @@ class MeshCutter {
             points2.push(v2, vI0, vI1);
             normals2.push(n2, nI0, nI1);
             uvs2.push(u2, uI0, uI1);
+            linesInner.push(vI0, vI1);
             pointsInner.push(vI0, vI1);
             normalsInner.push(nI0, nI1);
             uvsInner.push(uI0, uI1);
@@ -211,6 +214,7 @@ class MeshCutter {
             points1.push(v2, vI0, vI1);
             normals1.push(n2, nI0, nI1);
             uvs1.push(u2, uI0, uI1);
+            linesInner.push(vI0, vI1);
             pointsInner.push(vI0, vI1);
             normalsInner.push(nI0, nI1);
             uvsInner.push(uI0, uI1);
@@ -227,6 +231,7 @@ class MeshCutter {
             points1.push(v0, v1, v2);
             normals1.push(n0, n1, n2);
             uvs1.push(u0, u1, u2);
+            linesInner.push(v0, v1);
             pointsInner.push(v0, v1);
             normalsInner.push(n0, n1);
             uvsInner.push(u0, u1);
@@ -234,6 +239,7 @@ class MeshCutter {
             points2.push(v0, v1, v2);
             normals2.push(n0, n1, n2);
             uvs2.push(u0, u1, u2);
+            linesInner.push(v0, v1);
             pointsInner.push(v0, v1);
             normalsInner.push(n0, n1);
             uvsInner.push(u0, u1);
@@ -253,6 +259,7 @@ class MeshCutter {
             points2.push(v0, vI0, vI1);
             normals2.push(n0, nI0, nI1);
             uvs2.push(u0, uI0, uI1);
+            linesInner.push(vI0, vI1);
             pointsInner.push(vI0, vI1);
             normalsInner.push(nI0, nI1);
             uvsInner.push(uI0, uI1);
@@ -260,6 +267,7 @@ class MeshCutter {
             points1.push(v0, v1, v2);
             normals1.push(n0, n1, n2);
             uvs1.push(u0, u1, u2);
+            linesInner.push(v1, v2);
             pointsInner.push(v1, v2);
             normalsInner.push(n1, n2);
             uvsInner.push(u1, u2);
@@ -277,6 +285,7 @@ class MeshCutter {
             points1.push(v0, vI0, vI1);
             normals1.push(n0, nI0, nI1);
             uvs1.push(u0, uI0, uI1);
+            linesInner.push(vI0, vI1);
             pointsInner.push(vI0, vI1);
             normalsInner.push(nI0, nI1);
             uvsInner.push(uI0, uI1);
@@ -293,6 +302,7 @@ class MeshCutter {
             points1.push(v0, v1, v2);
             normals1.push(n0, n1, n2);
             uvs1.push(u0, u1, u2);
+            linesInner.push(v1, v2);
             pointsInner.push(v1, v2);
             normalsInner.push(n1, n2);
             uvsInner.push(u1, u2);
@@ -300,6 +310,7 @@ class MeshCutter {
             points2.push(v0, v1, v2);
             normals2.push(n0, n1, n2);
             uvs2.push(u0, u1, u2);
+            linesInner.push(v1, v2);
             pointsInner.push(v1, v2);
             normalsInner.push(n1, n2);
             uvsInner.push(u1, u2);
@@ -319,6 +330,7 @@ class MeshCutter {
             points2.push(v1, vI0, vI1);
             normals2.push(n1, nI0, nI1);
             uvs2.push(u1, uI0, uI1);
+            linesInner.push(vI0, vI1);
             pointsInner.push(vI0, vI1);
             normalsInner.push(nI0, nI1);
             uvsInner.push(uI0, uI1);
@@ -343,6 +355,7 @@ class MeshCutter {
             points1.push(v1, vI0, vI1);
             normals1.push(n1, nI0, nI1);
             uvs1.push(u1, uI0, uI1);
+            linesInner.push(vI0, vI1);
             pointsInner.push(vI0, vI1);
             normalsInner.push(nI0, nI1);
             uvsInner.push(uI0, uI1);
@@ -359,6 +372,7 @@ class MeshCutter {
             points1.push(v0, v1, v2);
             normals1.push(n0, n1, n2);
             uvs1.push(u0, u1, u2);
+            linesInner.push(v2, v0);
             pointsInner.push(v2, v0);
             normalsInner.push(n2, n0);
             uvsInner.push(u2, u0);
@@ -366,6 +380,7 @@ class MeshCutter {
             points2.push(v0, v1, v2);
             normals2.push(n0, n1, n2);
             uvs2.push(u0, u1, u2);
+            linesInner.push(v2, v0);
             pointsInner.push(v2, v0);
             normalsInner.push(n2, n0);
             uvsInner.push(u2, u0);
@@ -380,6 +395,7 @@ class MeshCutter {
           points2.push(v0, v1, vI0);
           normals2.push(n0, n1, nI0);
           uvs2.push(u0, u1, uI0);
+          linesInner.push(vI0, v0);
           pointsInner.push(vI0, v0);
           normalsInner.push(nI0, n0);
           uvsInner.push(uI0, u0);
@@ -391,6 +407,7 @@ class MeshCutter {
           points1.push(v0, v1, vI0);
           normals1.push(n0, n1, nI0);
           uvs1.push(u0, u1, uI0);
+          linesInner.push(vI0, v0);
           pointsInner.push(vI0, v0);
           normalsInner.push(nI0, n0);
           uvsInner.push(uI0, u0);
@@ -404,6 +421,7 @@ class MeshCutter {
           points2.push(v1, v2, vI0);
           normals2.push(n1, n2, nI0);
           uvs2.push(u1, u2, uI0);
+          linesInner.push(vI0, v1);
           pointsInner.push(vI0, v1);
           normalsInner.push(nI0, n1);
           uvsInner.push(uI0, u1);
@@ -415,6 +433,7 @@ class MeshCutter {
           points1.push(v1, v2, vI0);
           normals1.push(n1, n2, nI0);
           uvs1.push(u1, u2, uI0);
+          linesInner.push(vI0, v1);
           pointsInner.push(vI0, v1);
           normalsInner.push(nI0, n1);
           uvsInner.push(uI0, u1);
@@ -428,6 +447,7 @@ class MeshCutter {
           points2.push(v2, v0, vI0);
           normals2.push(n2, n0, nI0);
           uvs2.push(u2, u0, uI0);
+          linesInner.push(vI0, v2);
           pointsInner.push(vI0, v2);
           normalsInner.push(nI0, n2);
           uvsInner.push(uI0, u2);
@@ -439,6 +459,7 @@ class MeshCutter {
           points1.push(v2, v0, vI0);
           normals1.push(n2, n0, nI0);
           uvs1.push(u2, u0, uI0);
+          linesInner.push(vI0, v2);
           pointsInner.push(vI0, v2);
           normalsInner.push(nI0, n2);
           uvsInner.push(uI0, u2);
@@ -457,6 +478,12 @@ class MeshCutter {
     // points1.length = 0
     // normals1.length = 0
     // uvs1.length = 0
+
+    // test
+    points1.forEach((point, i) => {
+      points1[i] = point.clone()
+      points1[i].z -= 1
+    })
 
     console.log({pointsInner})
     const coords2D = [];
