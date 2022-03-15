@@ -107,26 +107,26 @@ window.meshCutter = new MeshCutter()
 // geometry.rotateY(Math.PI/2)
 
 const shape = new THREE.Shape();
-// shape.moveTo( 0,0 );
-// shape.lineTo( .5, .5 );
-// shape.lineTo( 0, -1 );
-// shape.lineTo( -.5, .5 );
-// shape.lineTo( 0, 0 );
+shape.moveTo( 0,0 );
+shape.lineTo( .5, .5 );
+shape.lineTo( 0, -1 );
+shape.lineTo( -.5, .5 );
+shape.lineTo( 0, 0 );
 
 // shape.lineTo( -.5, 1.5 );
 // shape.lineTo( 0, 1 );
 // shape.lineTo( .5, 1.5 );
 // shape.lineTo( 0, 0 );
 
-shape.moveTo( 0, 1 );
-shape.lineTo( .3, .3 );
-shape.lineTo( 1, 0 );
-shape.lineTo( .3, -.3 );
-shape.lineTo( 0, -1 );
-shape.lineTo( -.3, -.3 );
-shape.lineTo( -1, 0 );
-shape.lineTo( -.3, .3 );
-shape.lineTo( 0, 1 );
+// shape.moveTo( 0, 1 );
+// shape.lineTo( .3, .3 );
+// shape.lineTo( 1, 0 );
+// shape.lineTo( .3, -.3 );
+// shape.lineTo( 0, -1 );
+// shape.lineTo( -.3, -.3 );
+// shape.lineTo( -1, 0 );
+// shape.lineTo( -.3, .3 );
+// shape.lineTo( 0, 1 );
 const extrudeSettings = {
   curveSegments: 1,
 	steps: 1,
@@ -147,8 +147,8 @@ geometry.translate(0, 0, -.5)
 
 const material = new THREE.MeshStandardMaterial({
   // const material = new THREE.MeshBasicMaterial({
-  color: 'black',
-  wireframe: true,
+  // color: 'black',
+  // wireframe: true,
   side: THREE.DoubleSide,
   map: new THREE.TextureLoader().load('./image/uv_grid_opengl.jpg'),
 })

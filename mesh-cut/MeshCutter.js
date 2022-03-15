@@ -321,7 +321,7 @@ class MeshCutter {
     // test
     this.points1.forEach((point, i) => {
       this.points1[i] = point.clone()
-      this.points1[i].z -= 1
+      // this.points1[i].z -= 1 // test
     })
 
     console.log({pointsInner:this.pointsInner})
