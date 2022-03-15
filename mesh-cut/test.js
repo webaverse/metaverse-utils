@@ -1,8 +1,8 @@
-import * as THREE from '/lib/three.js_github/build/three.module.js'
-// import * as THREE from 'https://cdn.skypack.dev/three@0.136?min'
+// import * as THREE from '/lib/three.js_github/build/three.module.js'
+import * as THREE from 'https://cdn.skypack.dev/three@0.136?min'
 window.THREE = THREE
-import { OrbitControls } from '/lib/three.js_github/examples/jsm/controls/OrbitControls.js'
-// import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js'
+// import { OrbitControls } from '/lib/three.js_github/examples/jsm/controls/OrbitControls.js'
+import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js'
 import { MeshCutter } from './MeshCutter.js'
 
 window.container = null
