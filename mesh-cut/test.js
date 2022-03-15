@@ -178,9 +178,8 @@ const uvs = [
 ]
 const geometry = new THREE.BufferGeometry()
 geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 3 ) );
+geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
 geometry.computeVertexNormals()
-console.log({geometry})
 
 //
 
@@ -212,8 +211,8 @@ if (true) {
 
   // window.plane = new THREE.Plane(new THREE.Vector3(1,0,0).normalize(), constant)
   // window.plane = new THREE.Plane(new THREE.Vector3(0,1,0).normalize(), constant)
-  // window.plane = new THREE.Plane(new THREE.Vector3(0,0,1).normalize(), constant)
-  window.plane = new THREE.Plane(new THREE.Vector3(1,0,1).normalize(), constant)
+  window.plane = new THREE.Plane(new THREE.Vector3(0,0,1).normalize(), constant)
+  // window.plane = new THREE.Plane(new THREE.Vector3(1,0,1).normalize(), constant)
   // window.plane = new THREE.Plane(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), constant)
 
   setTimeout(() => {

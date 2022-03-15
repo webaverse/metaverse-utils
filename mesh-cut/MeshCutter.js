@@ -314,9 +314,9 @@ class MeshCutter {
     // )
 
     // test
-    this.points1.length = 0
-    this.normals1.length = 0
-    this.uvs1.length = 0
+    // this.points1.length = 0
+    // this.normals1.length = 0
+    // this.uvs1.length = 0
 
     // test
     this.points1.forEach((point, i) => {
