@@ -17,7 +17,7 @@ function init_three() {
   container = document.createElement('div')
   document.body.appendChild(container)
 
-  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 370)
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 370)
   camera.position.set(3, 5, 7)
   camera.lookAt(0, 0, 0)
 
@@ -135,8 +135,8 @@ if (true) {
     window.output = window.meshCutter.cutByPlane(window.box, window.plane)
     if (window.output.object1) {
       window.scene.add(window.output.object1)
-      window.output.object1.position.x += -1
-      window.output.object1.position.z += 2
+      // window.output.object1.position.x += -1
+      // window.output.object1.position.z += 2
       // window.output.object1.updateMatrixWorld()
     }
     if (window.output.object2) {
@@ -145,6 +145,6 @@ if (true) {
       window.output.object2.position.z += 2
       // window.output.object2.updateMatrixWorld()
     }
-    // window.box.visible = false
+    window.box.visible = false
   }, 1000)
 }
