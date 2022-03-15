@@ -119,7 +119,7 @@ const extrudeSettings = {
 	bevelEnabled: false,
 };
 const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-// geometry.translate(0, 0, -.5)
+geometry.translate(0, 0, -.5)
 
 // const positions = [
 
@@ -132,7 +132,7 @@ const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
 
 const material = new THREE.MeshStandardMaterial({
   // const material = new THREE.MeshBasicMaterial({
-  // color: 'red',
+  color: 'black',
   wireframe: true,
   side: THREE.DoubleSide,
   map: new THREE.TextureLoader().load('./image/uv_grid_opengl.jpg'),
