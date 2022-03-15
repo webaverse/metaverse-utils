@@ -1,59 +1,15 @@
 // import * as THREE from 'three';
-import * as THREE from 'https://cdn.skypack.dev/three@0.136?min'
+// import * as THREE from 'https://cdn.skypack.dev/three@0.136?min'
 import Delaunator from 'https://cdn.skypack.dev/delaunator@5.0.0';
 
 class MeshCutter {
   constructor() {
     this.tempLine1 = new THREE.Line3();
-    this.localPlane = new THREE.Plane();
+    this.localPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
     this.tempVector3 = new THREE.Vector3();
     this.tempVector2 = new THREE.Vector2();
-  }
-
-  transformFreeVectorInverse(v, m) {
-    // input:
-    // vector interpreted as a free vector
-    // THREE.Matrix4 orthogonal matrix (matrix without scale)
-
-    const x = v.x;
-    const y = v.y;
-    const z = v.z;
-    const e = m.elements;
-
-    v.x = e[0] * x + e[1] * y + e[2] * z;
-    v.y = e[4] * x + e[5] * y + e[6] * z;
-    v.z = e[8] * x + e[9] * y + e[10] * z;
-
-    return v;
-  }
-
-  transformTiedVectorInverse(v, m) {
-    // input:
-    // vector interpreted as a tied (ordinary) vector
-    // THREE.Matrix4 orthogonal matrix (matrix without scale)
-
-    const x = v.x;
-    const y = v.y;
-    const z = v.z;
-    const e = m.elements;
-
-    v.x = e[0] * x + e[1] * y + e[2] * z - e[12];
-    v.y = e[4] * x + e[5] * y + e[6] * z - e[13];
-    v.z = e[8] * x + e[9] * y + e[10] * z - e[14];
-
-    return v;
-  }
-
-  transformPlaneToLocalSpace(plane, m, resultPlane) {
-    resultPlane.normal.copy(plane.normal);
-    resultPlane.constant = plane.constant;
-
-    const referencePoint = this.transformTiedVectorInverse(plane.coplanarPoint(this.tempVector3), m);
-
-    this.transformFreeVectorInverse(resultPlane.normal, m);
-
-    // recalculate constant (like in setFromNormalAndCoplanarPoint)
-    resultPlane.constant = -referencePoint.dot(resultPlane.normal);
+    this.planeNormal = new THREE.Vector3();
+    this.planeNormalNegate = new THREE.Vector3();
   }
 
   getIntersectNode(v0, v1, n0, n1, u0, u1) {
@@ -400,6 +356,9 @@ class MeshCutter {
     // object1 can be null only in case of internal error
     // Returned value is number of pieces, 0 for error.
 
+    this.planeNormal.copy(plane.normal);
+    this.planeNormalNegate.copy(plane.normal).negate();
+
     this.isInnerFaces = isInnerFaces;
 
     const geometry = object.geometry;
@@ -432,8 +391,11 @@ class MeshCutter {
     this.uvsInner = []; // should don't need, just re-calc is ok.
 
     // Transform the plane to object local space
-    object.updateMatrix();
-    this.transformPlaneToLocalSpace(plane, object.matrix, this.localPlane);
+    // object.updateMatrix();
+    // this.transformPlaneToLocalSpace(plane, object.matrix, this.localPlane);
+
+    // Transform the object.geometry to plane space
+    object.geometry.lookAt(this.planeNormalNegate)
 
     // Iterate through the faces adding points to both pieces
     for (let i = 0; i < numFaces; i++) {
@@ -787,15 +749,23 @@ class MeshCutter {
       object1 = new THREE.Mesh(this.createGeometry(this.points1, this.uvs1, this.normals1), object.material);
       object1.quaternion.copy(object.quaternion);
       numObjects++;
-      if(this.isInnerFaces) object1.geometry.computeVertexNormals();
+      if(this.isInnerFaces) {
+        object1.geometry.computeVertexNormals();
+        object1.geometry.lookAt(this.planeNormal)
+      }
     }
 
     if (numPoints2 > 4) {
       object2 = new THREE.Mesh(this.createGeometry(this.points2, this.uvs2, this.normals2), object.material);
       object2.quaternion.copy(object.quaternion);
       numObjects++;
-      if(this.isInnerFaces) object2.geometry.computeVertexNormals();
+      if(this.isInnerFaces) {
+        object2.geometry.computeVertexNormals();
+        object2.geometry.lookAt(this.planeNormal)
+      }
     }
+
+    object.geometry.lookAt(this.planeNormal)
 
     const output = {
       object1,

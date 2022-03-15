@@ -1,8 +1,8 @@
-// import * as THREE from '../lib/three.js/build/three.module.js'
-import * as THREE from 'https://cdn.skypack.dev/three@0.136?min'
+import * as THREE from '/lib/three.js_github/build/three.module.js'
+// import * as THREE from 'https://cdn.skypack.dev/three@0.136?min'
 window.THREE = THREE
-// import { OrbitControls } from '../lib/three.js/examples/jsm/controls/OrbitControls.js'
-import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js'
+import { OrbitControls } from '/lib/three.js_github/examples/jsm/controls/OrbitControls.js'
+// import { OrbitControls } from 'https://cdn.skypack.dev/three@0.136/examples/jsm/controls/OrbitControls.js'
 import { MeshCutter } from './MeshCutter.js'
 
 window.container = null
@@ -56,7 +56,7 @@ function init_three() {
   // gridHelper.position.y = 0.037
   gridHelper.material.opacity = 0.2
   gridHelper.material.transparent = true
-  // scene.add(gridHelper)
+  scene.add(gridHelper)
 
   renderer = new THREE.WebGLRenderer({ antialias: true })
   renderer.setPixelRatio(window.devicePixelRatio)
@@ -209,10 +209,10 @@ if (true) {
   // window.constant = (Math.random() - 0.5) * 1
   // window.constant = .5
 
-  // window.plane = new THREE.Plane(new THREE.Vector3(1,0,0).normalize(), constant)
+  window.plane = new THREE.Plane(new THREE.Vector3(1,0,0).normalize(), constant)
   // window.plane = new THREE.Plane(new THREE.Vector3(0,1,0).normalize(), constant)
-  window.plane = new THREE.Plane(new THREE.Vector3(0,0,1).normalize(), constant)
-  // window.plane = new THREE.Plane(new THREE.Vector3(1,0,1).normalize(), constant)
+  // window.plane = new THREE.Plane(new THREE.Vector3(0,0,1).normalize(), constant)
+  // window.plane = new THREE.Plane(new THREE.Vector3(1,-1,1).normalize(), constant)
   // window.plane = new THREE.Plane(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), constant)
 
   setTimeout(() => {
