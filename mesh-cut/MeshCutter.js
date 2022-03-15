@@ -372,23 +372,35 @@ class MeshCutter {
         uv2,
         uv1,
       )
+      // this.uvs1.push(
+      //   0,
+      //   0,
+      //   0,
+      // )
       
-      const normal0 = this.normalsInner[this.delaunay.triangles[i * 3 + 0]]
-      const normal1 = this.normalsInner[this.delaunay.triangles[i * 3 + 1]]
-      const normal2 = this.normalsInner[this.delaunay.triangles[i * 3 + 2]]
+      // const normal0 = this.normalsInner[this.delaunay.triangles[i * 3 + 0]]
+      // const normal1 = this.normalsInner[this.delaunay.triangles[i * 3 + 1]]
+      // const normal2 = this.normalsInner[this.delaunay.triangles[i * 3 + 2]]
+      // this.normals1.push(
+      //   normal0,
+      //   normal2,
+      //   normal1,
+      // )
       this.normals1.push(
-        normal0,
-        normal2,
-        normal1,
+        0,
+        0,
+        0,
       )
     }
   }
 
-  cutByPlane(object, plane) {
+  cutByPlane(object, plane, isInnerFaces = false) {
     // Returns breakable objects in output.object1 and output.object2 members, the resulting 2 pieces of the cut.
     // object2 can be null if the plane doesn't cut the object.
     // object1 can be null only in case of internal error
     // Returned value is number of pieces, 0 for error.
+
+    this.isInnerFaces = isInnerFaces;
 
     const geometry = object.geometry;
     const coords = geometry.attributes.position.array;
@@ -413,7 +425,7 @@ class MeshCutter {
 
     this.normals1 = [];
     this.normals2 = [];
-    this.normalsInner = []; // should don't need, just re-calc is ok.
+    // this.normalsInner = []; // should don't need, just re-calc is ok.
 
     this.uvs1 = [];
     this.uvs2 = [];
@@ -466,7 +478,7 @@ class MeshCutter {
           this.linesInner.push(v1, v2);
           this.linesInner.push(v2, v0);
           this.pointsInner.push(v0, v1, v2);
-          this.normalsInner.push(n0, n1, n2);
+          // this.normalsInner.push(n0, n1, n2);
           this.uvsInner.push(u0, u1, u2);
         }
       } else if (sign0 === sign1) {
@@ -485,14 +497,14 @@ class MeshCutter {
             this.uvs2.push(u2, uI0, uI1);
             this.linesInner.push(vI0, vI1);
             this.pointsInner.push(vI0, vI1);
-            this.normalsInner.push(nI0, nI1);
+            // this.normalsInner.push(nI0, nI1);
             this.uvsInner.push(uI0, uI1);
           } else if (sign2 === 0) {
             this.points1.push(v0, v1, v2);
             this.normals1.push(n0, n1, n2);
             this.uvs1.push(u0, u1, u2);
             this.pointsInner.push(v2);
-            this.normalsInner.push(n2);
+            // this.normalsInner.push(n2);
             this.uvsInner.push(u2);
           }
         } else if (sign0 === 1) {
@@ -510,14 +522,14 @@ class MeshCutter {
             this.uvs1.push(u2, uI0, uI1);
             this.linesInner.push(vI0, vI1);
             this.pointsInner.push(vI0, vI1);
-            this.normalsInner.push(nI0, nI1);
+            // this.normalsInner.push(nI0, nI1);
             this.uvsInner.push(uI0, uI1);
           } else if (sign2 === 0) {
             this.points2.push(v0, v1, v2);
             this.normals2.push(n0, n1, n2);
             this.uvs2.push(u0, u1, u2);
             this.pointsInner.push(v2);
-            this.normalsInner.push(n2);
+            // this.normalsInner.push(n2);
             this.uvsInner.push(u2);
           }
         } else if (sign0 === 0) {
@@ -527,7 +539,7 @@ class MeshCutter {
             this.uvs1.push(u0, u1, u2);
             this.linesInner.push(v0, v1);
             this.pointsInner.push(v0, v1);
-            this.normalsInner.push(n0, n1);
+            // this.normalsInner.push(n0, n1);
             this.uvsInner.push(u0, u1);
           } else if (sign2 === 1) {
             this.points2.push(v0, v1, v2);
@@ -535,7 +547,7 @@ class MeshCutter {
             this.uvs2.push(u0, u1, u2);
             this.linesInner.push(v0, v1);
             this.pointsInner.push(v0, v1);
-            this.normalsInner.push(n0, n1);
+            // this.normalsInner.push(n0, n1);
             this.uvsInner.push(u0, u1);
           }
         }
@@ -555,7 +567,7 @@ class MeshCutter {
             this.uvs2.push(u0, uI0, uI1);
             this.linesInner.push(vI0, vI1);
             this.pointsInner.push(vI0, vI1);
-            this.normalsInner.push(nI0, nI1);
+            // this.normalsInner.push(nI0, nI1);
             this.uvsInner.push(uI0, uI1);
           } else if (sign0 === 0) {
             this.points1.push(v0, v1, v2);
@@ -563,7 +575,7 @@ class MeshCutter {
             this.uvs1.push(u0, u1, u2);
             this.linesInner.push(v1, v2);
             this.pointsInner.push(v1, v2);
-            this.normalsInner.push(n1, n2);
+            // this.normalsInner.push(n1, n2);
             this.uvsInner.push(u1, u2);
           }
         } else if (sign1 === 1) {
@@ -581,14 +593,14 @@ class MeshCutter {
             this.uvs1.push(u0, uI0, uI1);
             this.linesInner.push(vI0, vI1);
             this.pointsInner.push(vI0, vI1);
-            this.normalsInner.push(nI0, nI1);
+            // this.normalsInner.push(nI0, nI1);
             this.uvsInner.push(uI0, uI1);
           } else if (sign0 === 0) {
             this.points2.push(v0, v1, v2);
             this.normals2.push(n0, n1, n2);
             this.uvs2.push(u0, u1, u2);
             this.pointsInner.push(v0);
-            this.normalsInner.push(n0);
+            // this.normalsInner.push(n0);
             this.uvsInner.push(u0);
           }
         } else if (sign1 === 0) {
@@ -598,7 +610,7 @@ class MeshCutter {
             this.uvs1.push(u0, u1, u2);
             this.linesInner.push(v1, v2);
             this.pointsInner.push(v1, v2);
-            this.normalsInner.push(n1, n2);
+            // this.normalsInner.push(n1, n2);
             this.uvsInner.push(u1, u2);
           } else if (sign0 === 1) {
             this.points2.push(v0, v1, v2);
@@ -606,7 +618,7 @@ class MeshCutter {
             this.uvs2.push(u0, u1, u2);
             this.linesInner.push(v1, v2);
             this.pointsInner.push(v1, v2);
-            this.normalsInner.push(n1, n2);
+            // this.normalsInner.push(n1, n2);
             this.uvsInner.push(u1, u2);
           }
         }
@@ -626,14 +638,14 @@ class MeshCutter {
             this.uvs2.push(u1, uI0, uI1);
             this.linesInner.push(vI0, vI1);
             this.pointsInner.push(vI0, vI1);
-            this.normalsInner.push(nI0, nI1);
+            // this.normalsInner.push(nI0, nI1);
             this.uvsInner.push(uI0, uI1);
           } else if (sign1 === 0) {
             this.points1.push(v0, v1, v2);
             this.normals1.push(n0, n1, n2);
             this.uvs1.push(u0, u1, u2);
             this.pointsInner.push(v1);
-            this.normalsInner.push(n1);
+            // this.normalsInner.push(n1);
             this.uvsInner.push(u1);
           }
         } else if (sign2 === 1) {
@@ -651,14 +663,14 @@ class MeshCutter {
             this.uvs1.push(u1, uI0, uI1);
             this.linesInner.push(vI0, vI1);
             this.pointsInner.push(vI0, vI1);
-            this.normalsInner.push(nI0, nI1);
+            // this.normalsInner.push(nI0, nI1);
             this.uvsInner.push(uI0, uI1);
           } else if (sign1 === 0) {
             this.points2.push(v0, v1, v2);
             this.normals2.push(n0, n1, n2);
             this.uvs2.push(u0, u1, u2);
             this.pointsInner.push(v1);
-            this.normalsInner.push(n1);
+            // this.normalsInner.push(n1);
             this.uvsInner.push(u1);
           }
         } else if (sign2 === 0) {
@@ -668,7 +680,7 @@ class MeshCutter {
             this.uvs1.push(u0, u1, u2);
             this.linesInner.push(v2, v0);
             this.pointsInner.push(v2, v0);
-            this.normalsInner.push(n2, n0);
+            // this.normalsInner.push(n2, n0);
             this.uvsInner.push(u2, u0);
           } else if (sign1 === 1) {
             this.points2.push(v0, v1, v2);
@@ -676,7 +688,7 @@ class MeshCutter {
             this.uvs2.push(u0, u1, u2);
             this.linesInner.push(v2, v0);
             this.pointsInner.push(v2, v0);
-            this.normalsInner.push(n2, n0);
+            // this.normalsInner.push(n2, n0);
             this.uvsInner.push(u2, u0);
           }
         }
@@ -691,7 +703,7 @@ class MeshCutter {
           this.uvs2.push(u0, u1, uI0);
           this.linesInner.push(vI0, v0);
           this.pointsInner.push(vI0, v0);
-          this.normalsInner.push(nI0, n0);
+          // this.normalsInner.push(nI0, n0);
           this.uvsInner.push(uI0, u0);
         } else if (sign1 === -1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v2, n1, n2, u1, u2);
@@ -703,7 +715,7 @@ class MeshCutter {
           this.uvs1.push(u0, u1, uI0);
           this.linesInner.push(vI0, v0);
           this.pointsInner.push(vI0, v0);
-          this.normalsInner.push(nI0, n0);
+          // this.normalsInner.push(nI0, n0);
           this.uvsInner.push(uI0, u0);
         }
       } else if (sign1 === 0) {
@@ -717,7 +729,7 @@ class MeshCutter {
           this.uvs2.push(u1, u2, uI0);
           this.linesInner.push(vI0, v1);
           this.pointsInner.push(vI0, v1);
-          this.normalsInner.push(nI0, n1);
+          // this.normalsInner.push(nI0, n1);
           this.uvsInner.push(uI0, u1);
         } else if (sign2 === -1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v0, v2, n0, n2, u0, u2);
@@ -729,7 +741,7 @@ class MeshCutter {
           this.uvs1.push(u1, u2, uI0);
           this.linesInner.push(vI0, v1);
           this.pointsInner.push(vI0, v1);
-          this.normalsInner.push(nI0, n1);
+          // this.normalsInner.push(nI0, n1);
           this.uvsInner.push(uI0, u1);
         }
       } else if (sign2 === 0) {
@@ -743,7 +755,7 @@ class MeshCutter {
           this.uvs2.push(u2, u0, uI0);
           this.linesInner.push(vI0, v2);
           this.pointsInner.push(vI0, v2);
-          this.normalsInner.push(nI0, n2);
+          // this.normalsInner.push(nI0, n2);
           this.uvsInner.push(uI0, u2);
         } else if (sign0 === -1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v0, n1, n0, u1, u0);
@@ -755,13 +767,13 @@ class MeshCutter {
           this.uvs1.push(u2, u0, uI0);
           this.linesInner.push(vI0, v2);
           this.pointsInner.push(vI0, v2);
-          this.normalsInner.push(nI0, n2);
+          // this.normalsInner.push(nI0, n2);
           this.uvsInner.push(uI0, u2);
         }
       }
     }
 
-    this.createInnerFaces();
+    if(this.isInnerFaces) this.createInnerFaces();
 
     const numPoints1 = this.points1.length;
     const numPoints2 = this.points2.length;
@@ -775,12 +787,14 @@ class MeshCutter {
       object1 = new THREE.Mesh(this.createGeometry(this.points1, this.uvs1, this.normals1), object.material);
       object1.quaternion.copy(object.quaternion);
       numObjects++;
+      if(this.isInnerFaces) object1.geometry.computeVertexNormals();
     }
 
     if (numPoints2 > 4) {
       object2 = new THREE.Mesh(this.createGeometry(this.points2, this.uvs2, this.normals2), object.material);
       object2.quaternion.copy(object.quaternion);
       numObjects++;
+      if(this.isInnerFaces) object2.geometry.computeVertexNormals();
     }
 
     return {

@@ -172,7 +172,7 @@ if (true) {
   // window.plane = new THREE.Plane(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), constant)
 
   setTimeout(() => {
-    window.output = window.meshCutter.cutByPlane(window.box, window.plane)
+    window.output = window.meshCutter.cutByPlane(window.box, window.plane, true)
     if (window.output.object1) {
       window.scene.add(window.output.object1)
       window.output.object1.position.x += -1 * 1.1
