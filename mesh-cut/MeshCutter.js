@@ -8,8 +8,10 @@ class MeshCutter {
     this.localPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
     this.tempVector3 = new THREE.Vector3();
     this.tempVector2 = new THREE.Vector2();
-    this.planeNormal = new THREE.Vector3();
-    this.planeNormalNegate = new THREE.Vector3();
+    this.planeQuaternion = new THREE.Quaternion();
+    this.planeQuaternionNegate = new THREE.Quaternion();
+    this.zAxis = new THREE.Vector3(0, 0, 1);
+    this.epsilon = 0.001;
   }
 
   getIntersectNode(v0, v1, n0, n1, u0, u1) {
@@ -84,9 +86,11 @@ class MeshCutter {
         for(let il = 0; il < this.linesInner.length; il += 2) {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
-          if(
-            (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
-            (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
+          if( // todo: why lost precision?
+            // (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
+            // (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
+            (Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon && Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon) ||
+            (Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon && Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon)
           ) {
             isOverlap0 = true;
             break;
@@ -104,8 +108,10 @@ class MeshCutter {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
           if(
-            (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
-            (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
+            // (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
+            // (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
+            (Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon && Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon) ||
+            (Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon && Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon)
           ) {
             isOverlap1 = true;
             break;
@@ -123,8 +129,10 @@ class MeshCutter {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
           if(
-            (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
-            (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
+            // (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
+            // (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
+            (Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon && Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon) ||
+            (Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon && Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon)
           ) {
             isOverlap2 = true;
             break;
@@ -356,8 +364,8 @@ class MeshCutter {
     // object1 can be null only in case of internal error
     // Returned value is number of pieces, 0 for error.
 
-    this.planeNormal.copy(plane.normal);
-    this.planeNormalNegate.copy(plane.normal).negate();
+    this.planeQuaternion.setFromUnitVectors(this.zAxis, plane.normal);
+    this.planeQuaternionNegate.setFromUnitVectors(plane.normal, this.zAxis);
 
     this.isInnerFaces = isInnerFaces;
 
@@ -393,9 +401,10 @@ class MeshCutter {
     // Transform the plane to object local space
     // object.updateMatrix();
     // this.transformPlaneToLocalSpace(plane, object.matrix, this.localPlane);
+    // todo: still use "Transform the plane to object local space"
 
     // Transform the object.geometry to plane space
-    object.geometry.lookAt(this.planeNormalNegate)
+    object.geometry.applyQuaternion(this.planeQuaternionNegate)
 
     // Iterate through the faces adding points to both pieces
     for (let i = 0; i < numFaces; i++) {
@@ -751,7 +760,7 @@ class MeshCutter {
       numObjects++;
       if(this.isInnerFaces) {
         object1.geometry.computeVertexNormals();
-        object1.geometry.lookAt(this.planeNormal)
+        object1.geometry.applyQuaternion(this.planeQuaternion)
       }
     }
 
@@ -761,11 +770,11 @@ class MeshCutter {
       numObjects++;
       if(this.isInnerFaces) {
         object2.geometry.computeVertexNormals();
-        object2.geometry.lookAt(this.planeNormal)
+        object2.geometry.applyQuaternion(this.planeQuaternion)
       }
     }
 
-    object.geometry.lookAt(this.planeNormal)
+    object.geometry.applyQuaternion(this.planeQuaternion)
 
     const output = {
       object1,
