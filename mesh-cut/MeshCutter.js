@@ -106,6 +106,8 @@ class MeshCutter {
     let anyNotOverlap = false
     // todo: performance: filter halfedge === -1 first.
     for(let i = 0; i < this.delaunay.numTriangles; i++) {
+      if(this.delaunay.outers[i * 3 + 0]) continue
+
       const halfedge0 = this.delaunay.halfedges[i * 3 + 0];
       const halfedge1 = this.delaunay.halfedges[i * 3 + 1];
       const halfedge2 = this.delaunay.halfedges[i * 3 + 2];
@@ -183,6 +185,9 @@ class MeshCutter {
         this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 1]] = -1
         this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 2]] = -1
         anyNotOverlap = true
+        this.delaunay.outers[i * 3 + 0] = true
+        this.delaunay.outers[i * 3 + 1] = true
+        this.delaunay.outers[i * 3 + 2] = true
       }
 
       // this.delaunayTemp.triangles.push(
@@ -330,12 +335,16 @@ class MeshCutter {
     console.log({numTriangles: this.delaunay.numTriangles})
     console.log({linesInner: this.linesInner})
 
-    this.markOuterHalfedges();
-    this.markOuterHalfedges();
-    
-    // while(this.markOuterHalfedges()) {
-    //   console.log('recur')
-    // }
+    this.delaunay.outers = []
+    for(let i = 0; i < this.delaunay.trianglesLen; i++) {
+      this.delaunay.outers.push(false)
+    }
+    while(this.markOuterHalfedges()) {
+      console.log('recur')
+      // debugger
+    }
+    // this.markOuterHalfedges();
+    // this.markOuterHalfedges();
 
     this.delOuterTriangles()
     
