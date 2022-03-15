@@ -100,6 +100,125 @@ class MeshCutter {
     return geometry;
   }
 
+  createInnerFaces() {
+    // // test
+    // this.points1.push(
+    //   new THREE.Vector3(0, 0, 0),
+    //   new THREE.Vector3(0, 1, -1),
+    //   new THREE.Vector3(0, 1, 1),
+    // )
+
+    // // test
+    // this.points1.length = 0
+    // this.normals1.length = 0
+    // this.uvs1.length = 0
+
+    // test
+    this.points1.forEach((point, i) => {
+      this.points1[i] = point.clone()
+      this.points1[i].z -= 1
+    })
+
+    console.log({pointsInner:this.pointsInner})
+    const coords2D = [];
+    this.pointsInner.forEach(point => {
+      coords2D.push(point.x, point.y)
+    })
+    const delaunay = new Delaunator(coords2D);
+    console.log(delaunay);
+    const numTriangles = delaunay.trianglesLen / 3;
+    console.log({numTriangles})
+    console.log({linesInner: this.linesInner})
+
+    
+    for(let i = 0; i < numTriangles; i++) {
+      const x0 = coords2D[delaunay.triangles[i * 3 + 0] * 2]
+      const y0 = coords2D[delaunay.triangles[i * 3 + 0] * 2 + 1]
+      const x1 = coords2D[delaunay.triangles[i * 3 + 1] * 2]
+      const y1 = coords2D[delaunay.triangles[i * 3 + 1] * 2 + 1]
+      const x2 = coords2D[delaunay.triangles[i * 3 + 2] * 2]
+      const y2 = coords2D[delaunay.triangles[i * 3 + 2] * 2 + 1]
+      
+      // filter out outer triangles: if has any edge not overlap with original model's edges, delete the triangle.
+      if(true) { // todo: need recur filter out.
+        if(delaunay.halfedges[i * 3 + 0] === -1) {
+          let isOverlap0 = false
+          for(let il = 0; il < this.linesInner.length; il += 2) {
+            const p0 = this.linesInner[il]
+            const p1 = this.linesInner[il + 1]
+            if(
+              (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
+              (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
+            ) {
+              isOverlap0 = true;
+              break;
+            }
+          }
+          if(!isOverlap0) continue;
+        }
+
+        if(delaunay.halfedges[i * 3 + 1] === -1) {
+          let isOverlap1 = false
+          for(let il = 0; il < this.linesInner.length; il += 2) {
+            const p0 = this.linesInner[il]
+            const p1 = this.linesInner[il + 1]
+            if(
+              (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
+              (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
+            ) {
+              isOverlap1 = true;
+              break;
+            }
+          }
+          if(!isOverlap1) continue;
+        }
+
+        if(delaunay.halfedges[i * 3 + 2] === -1) {
+          let isOverlap2 = false
+          for(let il = 0; il < this.linesInner.length; il += 2) {
+            const p0 = this.linesInner[il]
+            const p1 = this.linesInner[il + 1]
+            if(
+              (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
+              (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
+            ) {
+              isOverlap2 = true;
+              break;
+            }
+          }
+          if(!isOverlap2) continue;
+        }
+      }
+      // end filter out outer triangles
+
+      console.log('remained triangle')
+
+      this.points1.push(
+        new THREE.Vector3(x0, y0, 0),
+        new THREE.Vector3(x2, y2, 0),
+        new THREE.Vector3(x1, y1, 0),
+      )
+      
+      const uv0 = this.uvsInner[delaunay.triangles[i * 3 + 0]]
+      const uv1 = this.uvsInner[delaunay.triangles[i * 3 + 1]]
+      const uv2 = this.uvsInner[delaunay.triangles[i * 3 + 2]]
+      this.uvs1.push(
+        uv0,
+        uv2,
+        uv1,
+      )
+      
+      const normal0 = this.normalsInner[delaunay.triangles[i * 3 + 0]]
+      const normal1 = this.normalsInner[delaunay.triangles[i * 3 + 1]]
+      const normal2 = this.normalsInner[delaunay.triangles[i * 3 + 2]]
+      this.normals1.push(
+        normal0,
+        normal2,
+        normal1,
+      )
+    }
+  }
+
   cutByPlane(object, plane) {
     // Returns breakable objects in output.object1 and output.object2 members, the resulting 2 pieces of the cut.
     // object2 can be null if the plane doesn't cut the object.
@@ -121,19 +240,19 @@ class MeshCutter {
       numFaces = indices.length / 3;
     }
 
-    const linesInner = [];
+    this.linesInner = [];
 
-    const points1 = [];
-    const points2 = [];
-    const pointsInner = [];
+    this.points1 = [];
+    this.points2 = [];
+    this.pointsInner = [];
 
-    const normals1 = [];
-    const normals2 = [];
-    const normalsInner = []; // should don't need, just re-calc is ok.
+    this.normals1 = [];
+    this.normals2 = [];
+    this.normalsInner = []; // should don't need, just re-calc is ok.
 
-    const uvs1 = [];
-    const uvs2 = [];
-    const uvsInner = []; // should don't need, just re-calc is ok.
+    this.uvs1 = [];
+    this.uvs2 = [];
+    this.uvsInner = []; // should don't need, just re-calc is ok.
 
     // Transform the plane to object local space
     object.updateMatrix();
@@ -167,92 +286,92 @@ class MeshCutter {
 
       if (sign0 === sign1 && sign1 === sign2 && sign2 === sign0) {
         if (sign0 === -1) {
-          points1.push(v0, v1, v2);
-          normals1.push(n0, n1, n2);
-          uvs1.push(u0, u1, u2);
+          this.points1.push(v0, v1, v2);
+          this.normals1.push(n0, n1, n2);
+          this.uvs1.push(u0, u1, u2);
         } else if (sign0 === 1) {
-          points2.push(v0, v1, v2);
-          normals2.push(n0, n1, n2);
-          uvs2.push(u0, u1, u2);
+          this.points2.push(v0, v1, v2);
+          this.normals2.push(n0, n1, n2);
+          this.uvs2.push(u0, u1, u2);
         } else if (sign0 === 0) {
-          points2.push(v0, v1, v2);
-          normals2.push(n0, n1, n2);
-          uvs2.push(u0, u1, u2);
-          linesInner.push(v0, v1);
-          linesInner.push(v1, v2);
-          linesInner.push(v2, v0);
-          pointsInner.push(v0, v1, v2);
-          normalsInner.push(n0, n1, n2);
-          uvsInner.push(u0, u1, u2);
+          this.points2.push(v0, v1, v2);
+          this.normals2.push(n0, n1, n2);
+          this.uvs2.push(u0, u1, u2);
+          this.linesInner.push(v0, v1);
+          this.linesInner.push(v1, v2);
+          this.linesInner.push(v2, v0);
+          this.pointsInner.push(v0, v1, v2);
+          this.normalsInner.push(n0, n1, n2);
+          this.uvsInner.push(u0, u1, u2);
         }
       } else if (sign0 === sign1) {
         if (sign0 === -1) {
           if (sign2 === 1) {
             const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v0, v2, n0, n1, u0, u2);
             const {vI: vI1, nI: nI1, uI: uI1} = this.getIntersectNode(v1, v2, n1, n2, u1, u2);
-            points1.push(v0, vI1, vI0);
-            normals1.push(n0, nI1, nI0);
-            uvs1.push(u0, uI1, uI0);
-            points1.push(v0, v1, vI1);
-            normals1.push(n0, n1, nI1);
-            uvs1.push(u0, u1, uI1);
-            points2.push(v2, vI0, vI1);
-            normals2.push(n2, nI0, nI1);
-            uvs2.push(u2, uI0, uI1);
-            linesInner.push(vI0, vI1);
-            pointsInner.push(vI0, vI1);
-            normalsInner.push(nI0, nI1);
-            uvsInner.push(uI0, uI1);
+            this.points1.push(v0, vI1, vI0);
+            this.normals1.push(n0, nI1, nI0);
+            this.uvs1.push(u0, uI1, uI0);
+            this.points1.push(v0, v1, vI1);
+            this.normals1.push(n0, n1, nI1);
+            this.uvs1.push(u0, u1, uI1);
+            this.points2.push(v2, vI0, vI1);
+            this.normals2.push(n2, nI0, nI1);
+            this.uvs2.push(u2, uI0, uI1);
+            this.linesInner.push(vI0, vI1);
+            this.pointsInner.push(vI0, vI1);
+            this.normalsInner.push(nI0, nI1);
+            this.uvsInner.push(uI0, uI1);
           } else if (sign2 === 0) {
-            points1.push(v0, v1, v2);
-            normals1.push(n0, n1, n2);
-            uvs1.push(u0, u1, u2);
-            pointsInner.push(v2);
-            normalsInner.push(n2);
-            uvsInner.push(u2);
+            this.points1.push(v0, v1, v2);
+            this.normals1.push(n0, n1, n2);
+            this.uvs1.push(u0, u1, u2);
+            this.pointsInner.push(v2);
+            this.normalsInner.push(n2);
+            this.uvsInner.push(u2);
           }
         } else if (sign0 === 1) {
           if (sign2 === -1) {
             const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v0, v2, n0, n2, u0, u2);
             const {vI: vI1, nI: nI1, uI: uI1} = this.getIntersectNode(v1, v2, n1, n2, u1, u2);
-            points2.push(v0, vI1, vI0);
-            normals2.push(n0, nI1, nI0);
-            uvs2.push(u0, uI1, uI0);
-            points2.push(v0, v1, vI1);
-            normals2.push(n0, n1, nI1);
-            uvs2.push(u0, u1, uI1);
-            points1.push(v2, vI0, vI1);
-            normals1.push(n2, nI0, nI1);
-            uvs1.push(u2, uI0, uI1);
-            linesInner.push(vI0, vI1);
-            pointsInner.push(vI0, vI1);
-            normalsInner.push(nI0, nI1);
-            uvsInner.push(uI0, uI1);
+            this.points2.push(v0, vI1, vI0);
+            this.normals2.push(n0, nI1, nI0);
+            this.uvs2.push(u0, uI1, uI0);
+            this.points2.push(v0, v1, vI1);
+            this.normals2.push(n0, n1, nI1);
+            this.uvs2.push(u0, u1, uI1);
+            this.points1.push(v2, vI0, vI1);
+            this.normals1.push(n2, nI0, nI1);
+            this.uvs1.push(u2, uI0, uI1);
+            this.linesInner.push(vI0, vI1);
+            this.pointsInner.push(vI0, vI1);
+            this.normalsInner.push(nI0, nI1);
+            this.uvsInner.push(uI0, uI1);
           } else if (sign2 === 0) {
-            points2.push(v0, v1, v2);
-            normals2.push(n0, n1, n2);
-            uvs2.push(u0, u1, u2);
-            pointsInner.push(v2);
-            normalsInner.push(n2);
-            uvsInner.push(u2);
+            this.points2.push(v0, v1, v2);
+            this.normals2.push(n0, n1, n2);
+            this.uvs2.push(u0, u1, u2);
+            this.pointsInner.push(v2);
+            this.normalsInner.push(n2);
+            this.uvsInner.push(u2);
           }
         } else if (sign0 === 0) {
           if (sign2 === -1) {
-            points1.push(v0, v1, v2);
-            normals1.push(n0, n1, n2);
-            uvs1.push(u0, u1, u2);
-            linesInner.push(v0, v1);
-            pointsInner.push(v0, v1);
-            normalsInner.push(n0, n1);
-            uvsInner.push(u0, u1);
+            this.points1.push(v0, v1, v2);
+            this.normals1.push(n0, n1, n2);
+            this.uvs1.push(u0, u1, u2);
+            this.linesInner.push(v0, v1);
+            this.pointsInner.push(v0, v1);
+            this.normalsInner.push(n0, n1);
+            this.uvsInner.push(u0, u1);
           } else if (sign2 === 1) {
-            points2.push(v0, v1, v2);
-            normals2.push(n0, n1, n2);
-            uvs2.push(u0, u1, u2);
-            linesInner.push(v0, v1);
-            pointsInner.push(v0, v1);
-            normalsInner.push(n0, n1);
-            uvsInner.push(u0, u1);
+            this.points2.push(v0, v1, v2);
+            this.normals2.push(n0, n1, n2);
+            this.uvs2.push(u0, u1, u2);
+            this.linesInner.push(v0, v1);
+            this.pointsInner.push(v0, v1);
+            this.normalsInner.push(n0, n1);
+            this.uvsInner.push(u0, u1);
           }
         }
       } else if (sign1 === sign2) {
@@ -260,70 +379,70 @@ class MeshCutter {
           if (sign0 === 1) {
             const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v0, n1, n0, u1, u0);
             const {vI: vI1, nI: nI1, uI: uI1} = this.getIntersectNode(v2, v0, n2, n0, u2, u0);
-            points1.push(v1, vI1, vI0);
-            normals1.push(n1, nI1, nI0);
-            uvs1.push(u1, uI1, uI0);
-            points1.push(v1, v2, vI1);
-            normals1.push(n1, n2, nI1);
-            uvs1.push(u1, u2, uI1);
-            points2.push(v0, vI0, vI1);
-            normals2.push(n0, nI0, nI1);
-            uvs2.push(u0, uI0, uI1);
-            linesInner.push(vI0, vI1);
-            pointsInner.push(vI0, vI1);
-            normalsInner.push(nI0, nI1);
-            uvsInner.push(uI0, uI1);
+            this.points1.push(v1, vI1, vI0);
+            this.normals1.push(n1, nI1, nI0);
+            this.uvs1.push(u1, uI1, uI0);
+            this.points1.push(v1, v2, vI1);
+            this.normals1.push(n1, n2, nI1);
+            this.uvs1.push(u1, u2, uI1);
+            this.points2.push(v0, vI0, vI1);
+            this.normals2.push(n0, nI0, nI1);
+            this.uvs2.push(u0, uI0, uI1);
+            this.linesInner.push(vI0, vI1);
+            this.pointsInner.push(vI0, vI1);
+            this.normalsInner.push(nI0, nI1);
+            this.uvsInner.push(uI0, uI1);
           } else if (sign0 === 0) {
-            points1.push(v0, v1, v2);
-            normals1.push(n0, n1, n2);
-            uvs1.push(u0, u1, u2);
-            linesInner.push(v1, v2);
-            pointsInner.push(v1, v2);
-            normalsInner.push(n1, n2);
-            uvsInner.push(u1, u2);
+            this.points1.push(v0, v1, v2);
+            this.normals1.push(n0, n1, n2);
+            this.uvs1.push(u0, u1, u2);
+            this.linesInner.push(v1, v2);
+            this.pointsInner.push(v1, v2);
+            this.normalsInner.push(n1, n2);
+            this.uvsInner.push(u1, u2);
           }
         } else if (sign1 === 1) {
           if (sign0 === -1) {
             const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v0, n1, n0, u1, u0);
             const {vI: vI1, nI: nI1, uI: uI1} = this.getIntersectNode(v2, v0, n2, n0, u2, u0);
-            points2.push(v1, vI1, vI0);
-            normals2.push(n1, nI1, nI0);
-            uvs2.push(u1, uI1, uI0);
-            points2.push(v1, v2, vI1);
-            normals2.push(n1, n2, nI1);
-            uvs2.push(u1, u2, uI1);
-            points1.push(v0, vI0, vI1);
-            normals1.push(n0, nI0, nI1);
-            uvs1.push(u0, uI0, uI1);
-            linesInner.push(vI0, vI1);
-            pointsInner.push(vI0, vI1);
-            normalsInner.push(nI0, nI1);
-            uvsInner.push(uI0, uI1);
+            this.points2.push(v1, vI1, vI0);
+            this.normals2.push(n1, nI1, nI0);
+            this.uvs2.push(u1, uI1, uI0);
+            this.points2.push(v1, v2, vI1);
+            this.normals2.push(n1, n2, nI1);
+            this.uvs2.push(u1, u2, uI1);
+            this.points1.push(v0, vI0, vI1);
+            this.normals1.push(n0, nI0, nI1);
+            this.uvs1.push(u0, uI0, uI1);
+            this.linesInner.push(vI0, vI1);
+            this.pointsInner.push(vI0, vI1);
+            this.normalsInner.push(nI0, nI1);
+            this.uvsInner.push(uI0, uI1);
           } else if (sign0 === 0) {
-            points2.push(v0, v1, v2);
-            normals2.push(n0, n1, n2);
-            uvs2.push(u0, u1, u2);
-            pointsInner.push(v0);
-            normalsInner.push(n0);
-            uvsInner.push(u0);
+            this.points2.push(v0, v1, v2);
+            this.normals2.push(n0, n1, n2);
+            this.uvs2.push(u0, u1, u2);
+            this.pointsInner.push(v0);
+            this.normalsInner.push(n0);
+            this.uvsInner.push(u0);
           }
         } else if (sign1 === 0) {
           if (sign0 === -1) {
-            points1.push(v0, v1, v2);
-            normals1.push(n0, n1, n2);
-            uvs1.push(u0, u1, u2);
-            linesInner.push(v1, v2);
-            pointsInner.push(v1, v2);
-            normalsInner.push(n1, n2);
-            uvsInner.push(u1, u2);
+            this.points1.push(v0, v1, v2);
+            this.normals1.push(n0, n1, n2);
+            this.uvs1.push(u0, u1, u2);
+            this.linesInner.push(v1, v2);
+            this.pointsInner.push(v1, v2);
+            this.normalsInner.push(n1, n2);
+            this.uvsInner.push(u1, u2);
           } else if (sign0 === 1) {
-            points2.push(v0, v1, v2);
-            normals2.push(n0, n1, n2);
-            uvs2.push(u0, u1, u2);
-            linesInner.push(v1, v2);
-            pointsInner.push(v1, v2);
-            normalsInner.push(n1, n2);
-            uvsInner.push(u1, u2);
+            this.points2.push(v0, v1, v2);
+            this.normals2.push(n0, n1, n2);
+            this.uvs2.push(u0, u1, u2);
+            this.linesInner.push(v1, v2);
+            this.pointsInner.push(v1, v2);
+            this.normalsInner.push(n1, n2);
+            this.uvsInner.push(u1, u2);
           }
         }
       } else if (sign2 === sign0) {
@@ -331,271 +450,156 @@ class MeshCutter {
           if (sign1 === 1) {
             const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v2, v1, n2, n1, u2, u1);
             const {vI: vI1, nI: nI1, uI: uI1} = this.getIntersectNode(v0, v1, n0, n1, u0, u1);
-            points1.push(v2, vI1, vI0);
-            normals1.push(n2, nI1, nI0);
-            uvs1.push(u2, uI1, uI0);
-            points1.push(v2, v0, vI1);
-            normals1.push(n2, n0, nI1);
-            uvs1.push(u2, u0, uI1);
-            points2.push(v1, vI0, vI1);
-            normals2.push(n1, nI0, nI1);
-            uvs2.push(u1, uI0, uI1);
-            linesInner.push(vI0, vI1);
-            pointsInner.push(vI0, vI1);
-            normalsInner.push(nI0, nI1);
-            uvsInner.push(uI0, uI1);
+            this.points1.push(v2, vI1, vI0);
+            this.normals1.push(n2, nI1, nI0);
+            this.uvs1.push(u2, uI1, uI0);
+            this.points1.push(v2, v0, vI1);
+            this.normals1.push(n2, n0, nI1);
+            this.uvs1.push(u2, u0, uI1);
+            this.points2.push(v1, vI0, vI1);
+            this.normals2.push(n1, nI0, nI1);
+            this.uvs2.push(u1, uI0, uI1);
+            this.linesInner.push(vI0, vI1);
+            this.pointsInner.push(vI0, vI1);
+            this.normalsInner.push(nI0, nI1);
+            this.uvsInner.push(uI0, uI1);
           } else if (sign1 === 0) {
-            points1.push(v0, v1, v2);
-            normals1.push(n0, n1, n2);
-            uvs1.push(u0, u1, u2);
-            pointsInner.push(v1);
-            normalsInner.push(n1);
-            uvsInner.push(u1);
+            this.points1.push(v0, v1, v2);
+            this.normals1.push(n0, n1, n2);
+            this.uvs1.push(u0, u1, u2);
+            this.pointsInner.push(v1);
+            this.normalsInner.push(n1);
+            this.uvsInner.push(u1);
           }
         } else if (sign2 === 1) {
           if (sign1 === -1) {
             const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v2, v1, n2, n1, u2, u1);
             const {vI: vI1, nI: nI1, uI: uI1} = this.getIntersectNode(v0, v1, n0, n1, u0, u1);
-            points2.push(v2, vI1, vI0);
-            normals2.push(n2, nI1, nI0);
-            uvs2.push(u2, uI1, uI0);
-            points2.push(v2, v0, vI1);
-            normals2.push(n2, n0, nI1);
-            uvs2.push(u2, u0, uI1);
-            points1.push(v1, vI0, vI1);
-            normals1.push(n1, nI0, nI1);
-            uvs1.push(u1, uI0, uI1);
-            linesInner.push(vI0, vI1);
-            pointsInner.push(vI0, vI1);
-            normalsInner.push(nI0, nI1);
-            uvsInner.push(uI0, uI1);
+            this.points2.push(v2, vI1, vI0);
+            this.normals2.push(n2, nI1, nI0);
+            this.uvs2.push(u2, uI1, uI0);
+            this.points2.push(v2, v0, vI1);
+            this.normals2.push(n2, n0, nI1);
+            this.uvs2.push(u2, u0, uI1);
+            this.points1.push(v1, vI0, vI1);
+            this.normals1.push(n1, nI0, nI1);
+            this.uvs1.push(u1, uI0, uI1);
+            this.linesInner.push(vI0, vI1);
+            this.pointsInner.push(vI0, vI1);
+            this.normalsInner.push(nI0, nI1);
+            this.uvsInner.push(uI0, uI1);
           } else if (sign1 === 0) {
-            points2.push(v0, v1, v2);
-            normals2.push(n0, n1, n2);
-            uvs2.push(u0, u1, u2);
-            pointsInner.push(v1);
-            normalsInner.push(n1);
-            uvsInner.push(u1);
+            this.points2.push(v0, v1, v2);
+            this.normals2.push(n0, n1, n2);
+            this.uvs2.push(u0, u1, u2);
+            this.pointsInner.push(v1);
+            this.normalsInner.push(n1);
+            this.uvsInner.push(u1);
           }
         } else if (sign2 === 0) {
           if (sign1 === -1) {
-            points1.push(v0, v1, v2);
-            normals1.push(n0, n1, n2);
-            uvs1.push(u0, u1, u2);
-            linesInner.push(v2, v0);
-            pointsInner.push(v2, v0);
-            normalsInner.push(n2, n0);
-            uvsInner.push(u2, u0);
+            this.points1.push(v0, v1, v2);
+            this.normals1.push(n0, n1, n2);
+            this.uvs1.push(u0, u1, u2);
+            this.linesInner.push(v2, v0);
+            this.pointsInner.push(v2, v0);
+            this.normalsInner.push(n2, n0);
+            this.uvsInner.push(u2, u0);
           } else if (sign1 === 1) {
-            points2.push(v0, v1, v2);
-            normals2.push(n0, n1, n2);
-            uvs2.push(u0, u1, u2);
-            linesInner.push(v2, v0);
-            pointsInner.push(v2, v0);
-            normalsInner.push(n2, n0);
-            uvsInner.push(u2, u0);
+            this.points2.push(v0, v1, v2);
+            this.normals2.push(n0, n1, n2);
+            this.uvs2.push(u0, u1, u2);
+            this.linesInner.push(v2, v0);
+            this.pointsInner.push(v2, v0);
+            this.normalsInner.push(n2, n0);
+            this.uvsInner.push(u2, u0);
           }
         }
       } else if (sign0 === 0) {
         if (sign1 === 1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v2, n1, n2, u1, u2);
-          points1.push(v0, vI0, v2);
-          normals1.push(n0, nI0, n2);
-          uvs1.push(u0, uI0, u2);
-          points2.push(v0, v1, vI0);
-          normals2.push(n0, n1, nI0);
-          uvs2.push(u0, u1, uI0);
-          linesInner.push(vI0, v0);
-          pointsInner.push(vI0, v0);
-          normalsInner.push(nI0, n0);
-          uvsInner.push(uI0, u0);
+          this.points1.push(v0, vI0, v2);
+          this.normals1.push(n0, nI0, n2);
+          this.uvs1.push(u0, uI0, u2);
+          this.points2.push(v0, v1, vI0);
+          this.normals2.push(n0, n1, nI0);
+          this.uvs2.push(u0, u1, uI0);
+          this.linesInner.push(vI0, v0);
+          this.pointsInner.push(vI0, v0);
+          this.normalsInner.push(nI0, n0);
+          this.uvsInner.push(uI0, u0);
         } else if (sign1 === -1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v2, n1, n2, u1, u2);
-          points2.push(v0, vI0, v2);
-          normals2.push(n0, nI0, n2);
-          uvs2.push(u0, uI0, u2);
-          points1.push(v0, v1, vI0);
-          normals1.push(n0, n1, nI0);
-          uvs1.push(u0, u1, uI0);
-          linesInner.push(vI0, v0);
-          pointsInner.push(vI0, v0);
-          normalsInner.push(nI0, n0);
-          uvsInner.push(uI0, u0);
+          this.points2.push(v0, vI0, v2);
+          this.normals2.push(n0, nI0, n2);
+          this.uvs2.push(u0, uI0, u2);
+          this.points1.push(v0, v1, vI0);
+          this.normals1.push(n0, n1, nI0);
+          this.uvs1.push(u0, u1, uI0);
+          this.linesInner.push(vI0, v0);
+          this.pointsInner.push(vI0, v0);
+          this.normalsInner.push(nI0, n0);
+          this.uvsInner.push(uI0, u0);
         }
       } else if (sign1 === 0) {
         if (sign2 === 1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v0, v2, n0, n2, u0, u2);
-          points1.push(v1, vI0, v0);
-          normals1.push(n1, nI0, n0);
-          uvs1.push(u1, uI0, u0);
-          points2.push(v1, v2, vI0);
-          normals2.push(n1, n2, nI0);
-          uvs2.push(u1, u2, uI0);
-          linesInner.push(vI0, v1);
-          pointsInner.push(vI0, v1);
-          normalsInner.push(nI0, n1);
-          uvsInner.push(uI0, u1);
+          this.points1.push(v1, vI0, v0);
+          this.normals1.push(n1, nI0, n0);
+          this.uvs1.push(u1, uI0, u0);
+          this.points2.push(v1, v2, vI0);
+          this.normals2.push(n1, n2, nI0);
+          this.uvs2.push(u1, u2, uI0);
+          this.linesInner.push(vI0, v1);
+          this.pointsInner.push(vI0, v1);
+          this.normalsInner.push(nI0, n1);
+          this.uvsInner.push(uI0, u1);
         } else if (sign2 === -1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v0, v2, n0, n2, u0, u2);
-          points2.push(v1, vI0, v0);
-          normals2.push(n1, nI0, n0);
-          uvs2.push(u1, uI0, u0);
-          points1.push(v1, v2, vI0);
-          normals1.push(n1, n2, nI0);
-          uvs1.push(u1, u2, uI0);
-          linesInner.push(vI0, v1);
-          pointsInner.push(vI0, v1);
-          normalsInner.push(nI0, n1);
-          uvsInner.push(uI0, u1);
+          this.points2.push(v1, vI0, v0);
+          this.normals2.push(n1, nI0, n0);
+          this.uvs2.push(u1, uI0, u0);
+          this.points1.push(v1, v2, vI0);
+          this.normals1.push(n1, n2, nI0);
+          this.uvs1.push(u1, u2, uI0);
+          this.linesInner.push(vI0, v1);
+          this.pointsInner.push(vI0, v1);
+          this.normalsInner.push(nI0, n1);
+          this.uvsInner.push(uI0, u1);
         }
       } else if (sign2 === 0) {
         if (sign0 === 1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v0, n1, n0, u1, u0);
-          points1.push(v2, vI0, v1);
-          normals1.push(n2, nI0, n1);
-          uvs1.push(u2, uI0, u1);
-          points2.push(v2, v0, vI0);
-          normals2.push(n2, n0, nI0);
-          uvs2.push(u2, u0, uI0);
-          linesInner.push(vI0, v2);
-          pointsInner.push(vI0, v2);
-          normalsInner.push(nI0, n2);
-          uvsInner.push(uI0, u2);
+          this.points1.push(v2, vI0, v1);
+          this.normals1.push(n2, nI0, n1);
+          this.uvs1.push(u2, uI0, u1);
+          this.points2.push(v2, v0, vI0);
+          this.normals2.push(n2, n0, nI0);
+          this.uvs2.push(u2, u0, uI0);
+          this.linesInner.push(vI0, v2);
+          this.pointsInner.push(vI0, v2);
+          this.normalsInner.push(nI0, n2);
+          this.uvsInner.push(uI0, u2);
         } else if (sign0 === -1) {
           const {vI: vI0, nI: nI0, uI: uI0} = this.getIntersectNode(v1, v0, n1, n0, u1, u0);
-          points2.push(v2, vI0, v1);
-          normals2.push(n2, nI0, n1);
-          uvs2.push(u2, uI0, u1);
-          points1.push(v2, v0, vI0);
-          normals1.push(n2, n0, nI0);
-          uvs1.push(u2, u0, uI0);
-          linesInner.push(vI0, v2);
-          pointsInner.push(vI0, v2);
-          normalsInner.push(nI0, n2);
-          uvsInner.push(uI0, u2);
+          this.points2.push(v2, vI0, v1);
+          this.normals2.push(n2, nI0, n1);
+          this.uvs2.push(u2, uI0, u1);
+          this.points1.push(v2, v0, vI0);
+          this.normals1.push(n2, n0, nI0);
+          this.uvs1.push(u2, u0, uI0);
+          this.linesInner.push(vI0, v2);
+          this.pointsInner.push(vI0, v2);
+          this.normalsInner.push(nI0, n2);
+          this.uvsInner.push(uI0, u2);
         }
       }
     }
 
-    // // test
-    // points1.push(
-    //   new THREE.Vector3(0, 0, 0),
-    //   new THREE.Vector3(0, 1, -1),
-    //   new THREE.Vector3(0, 1, 1),
-    // )
+    this.createInnerFaces();
 
-    // // test
-    // points1.length = 0
-    // normals1.length = 0
-    // uvs1.length = 0
-
-    // test
-    points1.forEach((point, i) => {
-      points1[i] = point.clone()
-      points1[i].z -= 1
-    })
-
-    console.log({pointsInner})
-    const coords2D = [];
-    pointsInner.forEach(point => {
-      coords2D.push(point.x, point.y)
-    })
-    const delaunay = new Delaunator(coords2D);
-    console.log(delaunay);
-    const numTriangles = delaunay.trianglesLen / 3;
-    console.log({numTriangles})
-    console.log({linesInner})
-
-    
-    for(let i = 0; i < numTriangles; i++) {
-      const x0 = coords2D[delaunay.triangles[i * 3 + 0] * 2]
-      const y0 = coords2D[delaunay.triangles[i * 3 + 0] * 2 + 1]
-      const x1 = coords2D[delaunay.triangles[i * 3 + 1] * 2]
-      const y1 = coords2D[delaunay.triangles[i * 3 + 1] * 2 + 1]
-      const x2 = coords2D[delaunay.triangles[i * 3 + 2] * 2]
-      const y2 = coords2D[delaunay.triangles[i * 3 + 2] * 2 + 1]
-      
-      // filter out outer triangles: if has any edge not overlap with original model's edges, delete the triangle.
-      if(true) { // todo: need recur filter out.
-        if(delaunay.halfedges[i * 3 + 0] === -1) {
-          let isOverlap0 = false
-          for(let il = 0; il < linesInner.length; il += 2) {
-            const p0 = linesInner[il]
-            const p1 = linesInner[il + 1]
-            if(
-              (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
-              (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
-            ) {
-              isOverlap0 = true;
-              break;
-            }
-          }
-          if(!isOverlap0) continue;
-        }
-
-        if(delaunay.halfedges[i * 3 + 1] === -1) {
-          let isOverlap1 = false
-          for(let il = 0; il < linesInner.length; il += 2) {
-            const p0 = linesInner[il]
-            const p1 = linesInner[il + 1]
-            if(
-              (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
-              (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
-            ) {
-              isOverlap1 = true;
-              break;
-            }
-          }
-          if(!isOverlap1) continue;
-        }
-
-        if(delaunay.halfedges[i * 3 + 2] === -1) {
-          let isOverlap2 = false
-          for(let il = 0; il < linesInner.length; il += 2) {
-            const p0 = linesInner[il]
-            const p1 = linesInner[il + 1]
-            if(
-              (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
-              (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
-            ) {
-              isOverlap2 = true;
-              break;
-            }
-          }
-          if(!isOverlap2) continue;
-        }
-      }
-      // end filter out outer triangles
-
-      console.log('remained triangle')
-
-      points1.push(
-        new THREE.Vector3(x0, y0, 0),
-        new THREE.Vector3(x2, y2, 0),
-        new THREE.Vector3(x1, y1, 0),
-      )
-      
-      const uv0 = uvsInner[delaunay.triangles[i * 3 + 0]]
-      const uv1 = uvsInner[delaunay.triangles[i * 3 + 1]]
-      const uv2 = uvsInner[delaunay.triangles[i * 3 + 2]]
-      uvs1.push(
-        uv0,
-        uv2,
-        uv1,
-      )
-      
-      const normal0 = normalsInner[delaunay.triangles[i * 3 + 0]]
-      const normal1 = normalsInner[delaunay.triangles[i * 3 + 1]]
-      const normal2 = normalsInner[delaunay.triangles[i * 3 + 2]]
-      normals1.push(
-        normal0,
-        normal2,
-        normal1,
-      )
-    }
-
-    const numPoints1 = points1.length;
-    const numPoints2 = points2.length;
+    const numPoints1 = this.points1.length;
+    const numPoints2 = this.points2.length;
 
     let object1 = null;
     let object2 = null;
@@ -603,13 +607,13 @@ class MeshCutter {
     let numObjects = 0;
 
     if (numPoints1 > 4) {
-      object1 = new THREE.Mesh(this.createGeometry(points1, uvs1, normals1), object.material);
+      object1 = new THREE.Mesh(this.createGeometry(this.points1, this.uvs1, this.normals1), object.material);
       object1.quaternion.copy(object.quaternion);
       numObjects++;
     }
 
     if (numPoints2 > 4) {
-      object2 = new THREE.Mesh(this.createGeometry(points2, uvs2, normals2), object.material);
+      object2 = new THREE.Mesh(this.createGeometry(this.points2, this.uvs2, this.normals2), object.material);
       object2.quaternion.copy(object.quaternion);
       numObjects++;
     }
