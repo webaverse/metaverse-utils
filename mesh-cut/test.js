@@ -96,6 +96,8 @@ function animate(time) {
 
 window.meshCutter = new MeshCutter()
 
+// geometry
+
 // const geometry = new THREE.ConeGeometry(.5, 1, 3)
 // // const geometry = new THREE.BoxGeometry()
 // // const geometry = new THREE.PlaneGeometry()
@@ -106,44 +108,87 @@ window.meshCutter = new MeshCutter()
 // geometry.rotateX(Math.PI/2)
 // geometry.rotateY(Math.PI/2)
 
-const shape = new THREE.Shape();
-shape.moveTo( 0,0 );
-shape.lineTo( .5, .5 );
-shape.lineTo( 0, -1 );
-shape.lineTo( -.5, .5 );
-shape.lineTo( 0, 0 );
+//
 
-// shape.lineTo( -.5, 1.5 );
-// shape.lineTo( 0, 1 );
-// shape.lineTo( .5, 1.5 );
+// const shape = new THREE.Shape();
+// shape.moveTo( 0,0 );
+// shape.lineTo( .5, .5 );
+// shape.lineTo( 0, -1 );
+// shape.lineTo( -.5, .5 );
 // shape.lineTo( 0, 0 );
 
-// shape.moveTo( 0, 1 );
-// shape.lineTo( .3, .3 );
-// shape.lineTo( 1, 0 );
-// shape.lineTo( .3, -.3 );
-// shape.lineTo( 0, -1 );
-// shape.lineTo( -.3, -.3 );
-// shape.lineTo( -1, 0 );
-// shape.lineTo( -.3, .3 );
-// shape.lineTo( 0, 1 );
-const extrudeSettings = {
-  curveSegments: 1,
-	steps: 1,
-	depth: 1,
-	bevelEnabled: false,
-};
-const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-geometry.translate(0, 0, -.5)
+// // shape.lineTo( -.5, 1.5 );
+// // shape.lineTo( 0, 1 );
+// // shape.lineTo( .5, 1.5 );
+// // shape.lineTo( 0, 0 );
 
-// const positions = [
+// // shape.moveTo( 0, 1 );
+// // shape.lineTo( .3, .3 );
+// // shape.lineTo( 1, 0 );
+// // shape.lineTo( .3, -.3 );
+// // shape.lineTo( 0, -1 );
+// // shape.lineTo( -.3, -.3 );
+// // shape.lineTo( -1, 0 );
+// // shape.lineTo( -.3, .3 );
+// // shape.lineTo( 0, 1 );
+// const extrudeSettings = {
+//   curveSegments: 1,
+// 	steps: 1,
+// 	depth: 1,
+// 	bevelEnabled: false,
+// };
+// const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+// geometry.translate(0, 0, -.5)
 
-// ]
-// const geometry = new THREE.BufferGeometry()
-// geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+//
+
+const positions = [
+  -1, 0, 1,
+  1, 0, 1,
+  0, 1, 0,
+
+  0, 0, -1,
+  -1, 0, 1,
+  0, 1, 0,
+
+  0, 0, -1,
+  1, 0, 1,
+  0, 1, 0,
+
+  0, 0, -1,
+  1, 0, 1,
+  -1, 0, 1,
+]
+const uvs = [
+  .5, 1,
+  0, 0,
+  1, 0,
+  
+  .5, 1,
+  0, 0,
+  1, 0,
+  
+  .5, 1,
+  0, 0,
+  1, 0,
+  
+  .5, 1,
+  0, 0,
+  1, 0,
+]
+const geometry = new THREE.BufferGeometry()
+geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 3 ) );
+geometry.computeVertexNormals()
+console.log({geometry})
+
+//
 
 // const geometry = indexedGeometry.toNonIndexed()
 // geometry.clearGroups()
+
+window.geometry = geometry
+// end geometry
 
 const material = new THREE.MeshStandardMaterial({
   // const material = new THREE.MeshBasicMaterial({
