@@ -107,11 +107,26 @@ window.meshCutter = new MeshCutter()
 // geometry.rotateY(Math.PI/2)
 
 const shape = new THREE.Shape();
-shape.moveTo( 0,0 );
-shape.lineTo( .5, .5 );
+// shape.moveTo( 0,0 );
+// shape.lineTo( .5, .5 );
+// shape.lineTo( 0, -1 );
+// shape.lineTo( -.5, .5 );
+// shape.lineTo( 0, 0 );
+
+// shape.lineTo( -.5, 1.5 );
+// shape.lineTo( 0, 1 );
+// shape.lineTo( .5, 1.5 );
+// shape.lineTo( 0, 0 );
+
+shape.moveTo( 0, 1 );
+shape.lineTo( .3, .3 );
+shape.lineTo( 1, 0 );
+shape.lineTo( .3, -.3 );
 shape.lineTo( 0, -1 );
-shape.lineTo( -.5, .5 );
-shape.lineTo( 0, 0 );
+shape.lineTo( -.3, -.3 );
+shape.lineTo( -1, 0 );
+shape.lineTo( -.3, .3 );
+shape.lineTo( 0, 1 );
 const extrudeSettings = {
   curveSegments: 1,
 	steps: 1,
@@ -160,17 +175,17 @@ if (true) {
     window.output = window.meshCutter.cutByPlane(window.box, window.plane)
     if (window.output.object1) {
       window.scene.add(window.output.object1)
-      window.output.object1.position.x += -1 / 1
-      window.output.object1.position.z += 2 / 1
+      window.output.object1.position.x += -1 * 1.1
+      window.output.object1.position.z += 2 * 1.1
       // window.output.object1.updateMatrixWorld()
     }
     if (window.output.object2) {
       window.scene.add(window.output.object2)
-      window.output.object2.position.x += 1 / 1
-      window.output.object2.position.z += 2 / 1
+      window.output.object2.position.x += 1 * 1.1
+      window.output.object2.position.z += 2 * 1.1
       // window.output.object2.updateMatrixWorld()
     }
     // window.box.visible = false
-    window.box.position.z += -1 / 1
+    window.box.position.z += -1 * 1.1
   }, 1000)
 }
