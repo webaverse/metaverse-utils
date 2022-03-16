@@ -213,7 +213,16 @@ if (true) {
   // window.plane = new THREE.Plane(new THREE.Vector3(0,1,0).normalize(), constant)
   // window.plane = new THREE.Plane(new THREE.Vector3(0,0,1).normalize(), constant)
   // window.plane = new THREE.Plane(new THREE.Vector3(1,-1,1).normalize(), constant)
-  window.plane = new THREE.Plane(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), constant)
+
+  // all fixed
+  window.plane = new THREE.Plane(new THREE.Vector3(-0.786569122554457, -0.5837970457276649, -0.20122133297332703).normalize(), constant) // error
+  // window.plane = new THREE.Plane(new THREE.Vector3(-0.8670086735851099, 0.07824129821275651, 0.49211203925749536).normalize(), constant) // problem numTriangles 4
+  // window.plane = new THREE.Plane(new THREE.Vector3(-0.4222418818893121, -0.445712066991348, 0.7893367763615682).normalize(), constant) // problem numTriangles 3
+  // end all fixed
+
+  // window.plane = new THREE.Plane(new THREE.Vector3(-0.011821913469205796, -0.8798684146138617, -0.47507032671680977).normalize(), constant) // numTriangles 1
+
+  // window.plane = new THREE.Plane(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), constant)
 
   setTimeout(() => {
     window.output = window.meshCutter.cutByPlane(window.box, window.plane, true)

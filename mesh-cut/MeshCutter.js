@@ -10,7 +10,7 @@ class MeshCutter {
     this.planeQuaternion = new THREE.Quaternion();
     this.planeQuaternionNegate = new THREE.Quaternion();
     this.zAxis = new THREE.Vector3(0, 0, 1);
-    this.epsilon = 0.001;
+    this.epsilon = 0.000001;
   }
 
   getIntersectNode(v0, v1, n0, n1, u0, u1) {
@@ -28,6 +28,11 @@ class MeshCutter {
 
     const uvPart = this.tempVector2.subVectors(u1, u0).multiplyScalar(ratio);
     const uI = new THREE.Vector2().copy(u0).add(uvPart);
+
+    // round vI
+    vI.x = Math.round(vI.x / this.epsilon) * this.epsilon;
+    vI.y = Math.round(vI.y / this.epsilon) * this.epsilon;
+    vI.z = Math.round(vI.z / this.epsilon) * this.epsilon;
 
     return {vI, nI, uI};
   }
