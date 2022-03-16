@@ -307,18 +307,20 @@ class MeshCutter {
     console.log({numTriangles: this.delaunay.numTriangles})
     console.log({linesInner: this.linesInner})
 
-    this.delaunay.outers = []
-    for(let i = 0; i < this.delaunay.trianglesLen; i++) {
-      this.delaunay.outers.push(false)
-    }
-    while(this.markOuterHalfedges()) {
-      console.log('recur')
-      // debugger
-    }
-    // this.markOuterHalfedges();
-    // this.markOuterHalfedges();
+    if(this.isDelOuterTriangles) {
+      this.delaunay.outers = []
+      for(let i = 0; i < this.delaunay.trianglesLen; i++) {
+        this.delaunay.outers.push(false)
+      }
+      while(this.markOuterHalfedges()) {
+        console.log('recur')
+        // debugger
+      }
+      // this.markOuterHalfedges();
+      // this.markOuterHalfedges();
 
-    this.delOuterTriangles()
+      this.delOuterTriangles()
+    }
     
     for(let i = 0; i < this.delaunay.numTriangles; i++) {
       const x0 = this.delaunay.coords[this.delaunay.triangles[i * 3 + 0] * 2]
@@ -381,18 +383,26 @@ class MeshCutter {
     }
   }
 
-  cutByPlane(object, plane, isInnerFaces = false) { // todo: add arg: isDelOuterTriangles = false, convex geometries don't need delete outer triangles.
+  cutByPlane(object, plane, isInnerFaces = false, isDelOuterTriangles = false) { // todo: add arg: isDelOuterTriangles = false, convex geometries don't need delete outer triangles.
     // Returns breakable objects in output.object1 and output.object2 members, the resulting 2 pieces of the cut.
     // object2 can be null if the plane doesn't cut the object.
     // object1 can be null only in case of internal error
     // Returned value is number of pieces, 0 for error.
 
+    /* args:
+      object: The THREE.Object3D which it's geometry will be cut.
+      plane: The THREE.Plane used to cut the object.
+      isInnerFaces: Whether generate inner faces at cut plane.
+      isDelOuterTriangles: When isInnerFaces is true, whether search and delete outer triangles. Convex geometry don't need delete outer triangles.
+    */
+    // args
     this.plane = plane
+    this.isInnerFaces = isInnerFaces;
+    this.isDelOuterTriangles = isDelOuterTriangles;
+    // end args
 
     this.planeQuaternion.setFromUnitVectors(this.zAxis, this.plane.normal);
     this.planeQuaternionNegate.setFromUnitVectors(this.plane.normal, this.zAxis);
-
-    this.isInnerFaces = isInnerFaces;
 
     const geometry = object.geometry;
     const coords = geometry.attributes.position.array;
