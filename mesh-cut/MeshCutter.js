@@ -88,11 +88,11 @@ class MeshCutter {
         for(let il = 0; il < this.linesInner.length; il += 2) {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
-          if( // todo: why lost precision?
-            // (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
-            // (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
-            (Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon && Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon) ||
-            (Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon && Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon)
+          if(
+            (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
+            (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
+            // (Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon && Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon) ||
+            // (Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon && Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon)
           ) {
             isOverlap0 = true;
             break;
@@ -110,10 +110,10 @@ class MeshCutter {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
           if(
-            // (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
-            // (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
-            (Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon && Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon) ||
-            (Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon && Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon)
+            (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
+            (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
+            // (Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon && Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon) ||
+            // (Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon && Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon)
           ) {
             isOverlap1 = true;
             break;
@@ -131,10 +131,10 @@ class MeshCutter {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
           if(
-            // (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
-            // (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
-            (Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon && Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon) ||
-            (Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon && Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon)
+            (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
+            (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
+            // (Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon && Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon) ||
+            // (Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon && Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon)
           ) {
             isOverlap2 = true;
             break;
@@ -208,11 +208,11 @@ class MeshCutter {
         for(let il = 0; il < this.linesInner.length; il += 2) {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
-          if( // todo: why lost precision?
-            // (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
-            // (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
-            (Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon && Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon) ||
-            (Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon && Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon)
+          if(
+            (x0 === p0.x && y0 === p0.y && x1 === p1.x && y1 === p1.y) ||
+            (x0 === p1.x && y0 === p1.y && x1 === p0.x && y1 === p0.y)
+            // (Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon && Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon) ||
+            // (Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon && Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon)
           ) {
             isOverlap0 = true;
             break;
@@ -227,10 +227,10 @@ class MeshCutter {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
           if(
-            // (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
-            // (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
-            (Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon && Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon) ||
-            (Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon && Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon)
+            (x1 === p0.x && y1 === p0.y && x2 === p1.x && y2 === p1.y) ||
+            (x1 === p1.x && y1 === p1.y && x2 === p0.x && y2 === p0.y)
+            // (Math.abs(x1 - p0.x) < this.epsilon && Math.abs(y1 - p0.y) < this.epsilon && Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon) ||
+            // (Math.abs(x1 - p1.x) < this.epsilon && Math.abs(y1 - p1.y) < this.epsilon && Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon)
           ) {
             isOverlap1 = true;
             break;
@@ -245,10 +245,10 @@ class MeshCutter {
           const p0 = this.linesInner[il]
           const p1 = this.linesInner[il + 1]
           if(
-            // (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
-            // (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
-            (Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon && Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon) ||
-            (Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon && Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon)
+            (x2 === p0.x && y2 === p0.y && x0 === p1.x && y0 === p1.y) ||
+            (x2 === p1.x && y2 === p1.y && x0 === p0.x && y0 === p0.y)
+            // (Math.abs(x2 - p0.x) < this.epsilon && Math.abs(y2 - p0.y) < this.epsilon && Math.abs(x0 - p1.x) < this.epsilon && Math.abs(y0 - p1.y) < this.epsilon) ||
+            // (Math.abs(x2 - p1.x) < this.epsilon && Math.abs(y2 - p1.y) < this.epsilon && Math.abs(x0 - p0.x) < this.epsilon && Math.abs(y0 - p0.y) < this.epsilon)
           ) {
             isOverlap2 = true;
             break;
