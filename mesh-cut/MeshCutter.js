@@ -58,9 +58,7 @@ class MeshCutter {
   }
 
   markOuterHalfedges() {
-    // todo: need recur filter out.
-    
-    let anyNotOverlap = false
+    let anyTriangleNotOverlap = false
     // todo: performance: filter halfedge === -1 first.
     for(let i = 0; i < this.delaunay.numTriangles; i++) {
       if(this.delaunay.outers[i * 3 + 0]) continue
@@ -79,7 +77,7 @@ class MeshCutter {
       const x2 = this.delaunay.coords[coordIndex2 * 2]
       const y2 = this.delaunay.coords[coordIndex2 * 2 + 1]
       
-      let anyNotOverlap2 = false
+      let anyEdgeNotOverlap = false
       if(halfedge0 === -1) {
         let isOverlap0 = false
         for(let il = 0; il < this.linesInner.length; il += 2) {
@@ -96,7 +94,7 @@ class MeshCutter {
           }
         }
         if(!isOverlap0) {
-          anyNotOverlap2 = true
+          anyEdgeNotOverlap = true
           // continue
         };
       }
@@ -117,7 +115,7 @@ class MeshCutter {
           }
         }
         if(!isOverlap1) {
-          anyNotOverlap2 = true
+          anyEdgeNotOverlap = true
           // continue
         };
       }
@@ -138,16 +136,16 @@ class MeshCutter {
           }
         }
         if(!isOverlap2) {
-          anyNotOverlap2 = true
+          anyEdgeNotOverlap = true
           // continue
         };
       }
 
-      if(anyNotOverlap2) {
+      if(anyEdgeNotOverlap) {
         this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 0]] = -1
         this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 1]] = -1
         this.delaunay.halfedges[this.delaunay.halfedges[i * 3 + 2]] = -1
-        anyNotOverlap = true
+        anyTriangleNotOverlap = true
         this.delaunay.outers[i * 3 + 0] = true
         this.delaunay.outers[i * 3 + 1] = true
         this.delaunay.outers[i * 3 + 2] = true
@@ -165,12 +163,10 @@ class MeshCutter {
       // )
     }
 
-    return anyNotOverlap
+    return anyTriangleNotOverlap
   }
 
   delOuterTriangles() {
-    // todo: need recur filter out.
-
     // this.delaunay2 = {
     //   coords: this.delaunay.coords.slice(),
     //   halfedges: this.delaunay.halfedges.slice(),
