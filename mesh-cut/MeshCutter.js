@@ -564,10 +564,9 @@ class MeshCutter {
             this.points1.push(v0, v1, v2);
             this.normals1.push(n0, n1, n2);
             this.uvs1.push(u0, u1, u2);
-            this.linesInner.push(v1, v2);
-            this.pointsInner.push(v1, v2);
-            // this.normalsInner.push(n1, n2);
-            this.uvsInner.push(u1, u2);
+            this.pointsInner.push(v0);
+            // this.normalsInner.push(n0);
+            this.uvsInner.push(u0);
           }
         } else if (sign1 === 1) {
           if (sign0 === -1) {
