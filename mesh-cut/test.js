@@ -103,8 +103,8 @@ window.meshCutter = new MeshCutter()
 // // const geometry = new THREE.PlaneGeometry()
 // // const geometry = new THREE.CylinderGeometry()
 // const geometry = new THREE.TorusGeometry( 1, .4, 3, 3 );
-// // const geometry = new THREE.TorusKnotGeometry()
-// geometry.scale(0.5, 0.5, 0.5)
+const geometry = new THREE.TorusKnotGeometry()
+geometry.scale(0.5, 0.5, 0.5)
 // geometry.rotateX(Math.PI/2)
 // geometry.rotateY(Math.PI/2)
 
@@ -142,44 +142,44 @@ window.meshCutter = new MeshCutter()
 
 //
 
-const positions = [
-  -1, 0, 1,
-  1, 0, 1,
-  0, 1, 0,
+// const positions = [
+//   -1, 0, 1,
+//   1, 0, 1,
+//   0, 1, 0,
 
-  0, 0, -1,
-  -1, 0, 1,
-  0, 1, 0,
+//   0, 0, -1,
+//   -1, 0, 1,
+//   0, 1, 0,
 
-  0, 0, -1,
-  1, 0, 1,
-  0, 1, 0,
+//   0, 0, -1,
+//   1, 0, 1,
+//   0, 1, 0,
 
-  0, 0, -1,
-  1, 0, 1,
-  -1, 0, 1,
-]
-const uvs = [
-  .5, 1,
-  0, 0,
-  1, 0,
+//   0, 0, -1,
+//   1, 0, 1,
+//   -1, 0, 1,
+// ]
+// const uvs = [
+//   .5, 1,
+//   0, 0,
+//   1, 0,
   
-  .5, 1,
-  0, 0,
-  1, 0,
+//   .5, 1,
+//   0, 0,
+//   1, 0,
   
-  .5, 1,
-  0, 0,
-  1, 0,
+//   .5, 1,
+//   0, 0,
+//   1, 0,
   
-  .5, 1,
-  0, 0,
-  1, 0,
-]
-const geometry = new THREE.BufferGeometry()
-geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
-geometry.computeVertexNormals()
+//   .5, 1,
+//   0, 0,
+//   1, 0,
+// ]
+// const geometry = new THREE.BufferGeometry()
+// geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+// geometry.setAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ) );
+// geometry.computeVertexNormals()
 
 //
 

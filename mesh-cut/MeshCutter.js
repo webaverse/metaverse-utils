@@ -4,12 +4,14 @@ import Delaunator from 'https://cdn.skypack.dev/delaunator@5.0.0';
 class MeshCutter {
   constructor() {
     this.tempLine1 = new THREE.Line3();
+    this.plane = null
     this.localPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
     this.tempVector3 = new THREE.Vector3();
     this.tempVector2 = new THREE.Vector2();
     this.planeQuaternion = new THREE.Quaternion();
     this.planeQuaternionNegate = new THREE.Quaternion();
     this.zAxis = new THREE.Vector3(0, 0, 1);
+    this.zAxisN = new THREE.Vector3(0, 0, -1);
     this.epsilon = 0.000001;
   }
 
@@ -353,9 +355,9 @@ class MeshCutter {
         uv2,
       )
       // this.uvs1.push(
-      //   0,
-      //   0,
-      //   0,
+      //   new THREE.Vector2(),
+      //   new THREE.Vector2(),
+      //   new THREE.Vector2(),
       // )
       
       // const normal0 = this.normalsInner[this.delaunay.triangles[i * 3 + 0]]
@@ -367,14 +369,14 @@ class MeshCutter {
       //   normal1,
       // )
       this.normals1.push(
-        0,
-        0,
-        0,
+        this.zAxis,
+        this.zAxis,
+        this.zAxis,
       )
       this.normals2.push(
-        0,
-        0,
-        0,
+        this.zAxisN,
+        this.zAxisN,
+        this.zAxisN,
       )
     }
   }
@@ -385,8 +387,10 @@ class MeshCutter {
     // object1 can be null only in case of internal error
     // Returned value is number of pieces, 0 for error.
 
-    this.planeQuaternion.setFromUnitVectors(this.zAxis, plane.normal);
-    this.planeQuaternionNegate.setFromUnitVectors(plane.normal, this.zAxis);
+    this.plane = plane
+
+    this.planeQuaternion.setFromUnitVectors(this.zAxis, this.plane.normal);
+    this.planeQuaternionNegate.setFromUnitVectors(this.plane.normal, this.zAxis);
 
     this.isInnerFaces = isInnerFaces;
 
@@ -779,7 +783,7 @@ class MeshCutter {
       object1.quaternion.copy(object.quaternion);
       numObjects++;
       if(this.isInnerFaces) {
-        object1.geometry.computeVertexNormals();
+        // object1.geometry.computeVertexNormals(); // note: can't re-compute here, will break other normals other than inner faces.
         object1.geometry.applyQuaternion(this.planeQuaternion)
       }
     }
@@ -789,7 +793,7 @@ class MeshCutter {
       object2.quaternion.copy(object.quaternion);
       numObjects++;
       if(this.isInnerFaces) {
-        object2.geometry.computeVertexNormals();
+        // object2.geometry.computeVertexNormals(); // note: can't re-compute here, will break other normals other than inner faces.
         object2.geometry.applyQuaternion(this.planeQuaternion)
       }
     }
